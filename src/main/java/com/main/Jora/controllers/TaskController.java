@@ -1,5 +1,6 @@
 package com.main.Jora.controllers;
 
+import com.main.Jora.enums.Priority;
 import com.main.Jora.models.Task;
 import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.services.TaskService;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/projects/{project_hash}/tasks")
@@ -27,6 +30,21 @@ public class TaskController {
         model.addAttribute("tasks", tasks);
         model.addAttribute("project", projectRepository.findById(project_id).orElse(null));
         return "tasks";
+    }
+    @GetMapping("/edit/{task_id}")
+    public String editTask(@PathVariable Long task_id,
+                           @PathVariable String project_hash,
+                           Model model){
+        Task task = taskService.getTaskById(task_id);
+        model.addAttribute("task", task);
+        model.addAttribute("project_hash", project_hash);
+        return "task-edit";
+    }
+    @PostMapping("/edit")
+    public String editTask(@RequestParam("task_id") Task task,
+                           @RequestParam Map<String, String> form){
+        taskService.changeTaskFieldsAndSave(task, form);
+        return "redirect:/projects/{project_hash}/tasks";
     }
     @PostMapping
     public String createTask(@Valid @ModelAttribute Task task,

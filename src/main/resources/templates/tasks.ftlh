@@ -20,7 +20,7 @@
         <#list tasks as task>
             <tr>
                 <td><h4>${task.id}</h4></td>
-                <td><h2>${task.name}</h2></td>
+                <td><h2><a href="/projects/${project.hash}/tasks/edit/${task.id}">${task.name}</a></h2></td>
                 <td><p>${task.description}</p></td>
                 <td><i>${task.priority}</i></td>
                 <td><i>${task.status}</i></td>
