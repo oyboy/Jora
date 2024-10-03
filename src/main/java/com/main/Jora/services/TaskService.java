@@ -15,7 +15,8 @@ public class TaskService {
     TaskRepository taskRepository;
     @Autowired
     ProjectRepository projectRepository;
-    public void addTask(Task task, Long project_id){
+    public void addTask(Task task, String project_hash){
+        Long project_id = projectRepository.findIdByHash(project_hash);
         Project projectFromDb = projectRepository.findById(project_id).orElse(null);
         projectFromDb.getTaskList().add(task);
         log.info("Setting task {} to project {}", task, projectFromDb);

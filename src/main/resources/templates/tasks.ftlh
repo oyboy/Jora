@@ -1,6 +1,7 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
     <h1>Task list</h1>
+    <a href="/home">К проектам</a>
     <h1>Список задач</h1>
     <table style="border: 1px">
         <tr>
@@ -30,7 +31,7 @@
         </#list>
     </table>
     <h2>Добавить новую задачу</h2>
-    <form action="/projects/${project.id}/tasks" method="post">
+    <form action="/projects/${project.hash}/tasks" method="post">
         <label for="name">Название:</label>
         <input type="text" id="name" name="name" required>
         <br>

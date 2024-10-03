@@ -13,6 +13,8 @@ public class ProjectService {
     ProjectRepository projectRepository;
 
     public void saveProject(Project project){
+        //Избежание ситуации, когда проект с данным хешем уже существует
+        while (projectRepository.findIdByHash(project.getHash()) != null) project.setHash(project.generateHash());
         projectRepository.save(project);
         log.info("Saving project: {}", project);
     }
