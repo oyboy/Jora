@@ -34,15 +34,21 @@
     <form action="/projects/${project.hash}/tasks" method="post">
         <label for="name">Название:</label>
         <input type="text" id="name" name="name" required>
+        <#if errors?? && errors.getFieldError("name")??>
+            <div class="error">${errors.getFieldError("name").defaultMessage}</div>
+        </#if>
         <br>
 
         <label for="description">Описание:</label>
-        <input type="text" id="description" name="description" required>
+        <input type="text" id="description" name="description">
+        <#if errors?? && errors.getFieldError("description")??>
+            <div class="error">${errors.getFieldError("description").defaultMessage}</div>
+        </#if>
         <br>
 
         <label>Приоритет:</label>
         <label>
-            <input type="radio" name="priority" value="LOW" required> Низкий
+            <input type="radio" name="priority" value="LOW"> Низкий
         </label>
         <label>
             <input type="radio" name="priority" value="MEDIUM"> Средний

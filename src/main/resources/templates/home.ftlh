@@ -5,11 +5,6 @@
         <input type="submit" value="+"/>
     </form>
 <h1 style="text-align: center">My Projects</h1>
-    <#if projects??>
-        <h1>Okay</h1>
-        <#else>
-        <h1>Not okay</h1>
-    </#if>
 <#list projects as project>
     <div>
         <h2>${project.title}</h2>

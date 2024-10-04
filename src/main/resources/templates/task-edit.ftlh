@@ -4,16 +4,22 @@
     <form action="/projects/${project_hash}/tasks/edit" method="post">
         <label for="name">Название:</label>
         <input type="text" id="name" name="name" value="${task.name}" required>
+        <#if errors?? && errors.getFieldError("name")??>
+            <div class="error">${errors.getFieldError("name").defaultMessage}</div>
+        </#if>
         <br>
 
         <label for="description">Описание:</label>
-        <input type="text" id="description" name="description" value="${task.description}" required>
+        <input type="text" id="description" name="description" value="${task.description}">
+        <#if errors?? && errors.getFieldError("description")??>
+            <div class="error">${errors.getFieldError("description").defaultMessage}</div>
+        </#if>
         <br>
 
         <label>Приоритет:</label>
         <label>
             <input type="radio" name="priority" value="LOW"
-                    ${(task.priority == "LOW")?then("checked", "")} required> Низкий
+                    ${(task.priority == "LOW")?then("checked", "")}> Низкий
         </label>
         <label>
             <input type="radio" name="priority" value="MEDIUM"
