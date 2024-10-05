@@ -21,7 +21,7 @@
     <div>
         <h2>${project.title}</h2>
         <p>${project.description}</p>
-        <i>${project.createdAt}</i>
+        <i>${project.createdAt?date}</i>
         <a href="/projects/${project.hash}/tasks">Go to tasks</a>
     </div>
     <#else>

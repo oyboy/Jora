@@ -13,7 +13,7 @@
         <#if errors?? && errors.getFieldError("description")??>
             <div class="error">${errors.getFieldError("description").defaultMessage}</div>
         </#if>
-
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
         <button type="submit">Сохранить</button>
     </form>
 </@c.page>

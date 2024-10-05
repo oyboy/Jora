@@ -2,9 +2,11 @@ package com.main.Jora.controllers;
 
 import com.main.Jora.models.User;
 import com.main.Jora.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -17,7 +19,13 @@ public class RegisterController {
     @Autowired
     PasswordEncoder passwordEncoder;
     @GetMapping("/login")
-    public String login() {return "login";}
+    public String login(Model model, HttpServletRequest request) {
+        Exception exception = (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        if (exception != null) {
+            model.addAttribute("SPRING_SECURITY_LAST_EXCEPTION", exception);
+        }
+        return "login";
+    }
     @GetMapping("/registration")
     public String registration(){
         return "registration";
@@ -36,10 +44,9 @@ public class RegisterController {
             model.addAttribute("errors", errors);
             return "registration";
         }
-
         boolean created = userService.createUser(user);
         if (!created) {
-            model.addAttribute("errorMessage",
+            model.addAttribute("userExistsError",
                     "Пользователь уже существует");
             return "registration";
         }
