@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user != null) {
             return user;
         }
-        System.out.println("Blya net usera");
+        System.out.println("Net usera");
         throw new UsernameNotFoundException(
                 "User '" + email + "' not found");
     }

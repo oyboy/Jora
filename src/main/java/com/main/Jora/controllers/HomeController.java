@@ -7,6 +7,7 @@ import com.main.Jora.services.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,8 +35,7 @@ public class HomeController {
     }
     @GetMapping
     public String home(Model model){
-        Iterable<Project> projectList = projectRepository.findAll();
-        model.addAttribute("projects", projectList);
+        model.addAttribute("projects", getUser().getProjects());
         return "home";
     }
     @GetMapping("/create")
@@ -44,7 +44,8 @@ public class HomeController {
     }
     @PostMapping("/create")
     public String createProject(@Valid Project project, Errors errors,
-                                Model model){
+                                Model model,
+                                @AuthenticationPrincipal User user){
         if (errors.hasErrors()){
             errors.getAllErrors().forEach(error -> {
                 System.out.println("Error in home_controller: " + error);
@@ -52,7 +53,7 @@ public class HomeController {
             model.addAttribute("errors", errors);
             return "create-project";
         }
-        projectService.saveProject(project);
+        projectService.saveProject(project, user);
         return "redirect:/home";
     }
 }
