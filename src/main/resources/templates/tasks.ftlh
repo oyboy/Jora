@@ -58,6 +58,7 @@
         </label>
         <br>
 
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
         <input type="hidden" name="projectId" value="${project.id}">
         <button type="submit">Добавить задачу</button>
     </form>

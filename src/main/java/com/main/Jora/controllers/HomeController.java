@@ -35,7 +35,8 @@ public class HomeController {
     }
     @GetMapping
     public String home(Model model){
-        model.addAttribute("projects", getUser().getProjects());
+        User curUser = getUser();
+        model.addAttribute("projects", projectService.getProjectsForUser(curUser));
         return "home";
     }
     @GetMapping("/create")
