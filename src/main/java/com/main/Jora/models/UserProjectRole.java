@@ -17,6 +17,7 @@ public class UserProjectRole {
     @JoinColumn(name = "project_id")
     private Project project;
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
     private Role role;
+
+    private boolean banned;
 }

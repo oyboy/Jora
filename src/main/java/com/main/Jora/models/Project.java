@@ -5,12 +5,16 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+@ToString
 @Data
+@EqualsAndHashCode
 @Entity
 @NoArgsConstructor
 public class Project {
@@ -24,7 +28,8 @@ public class Project {
     @Size(max=255, message="Description must be -le 255 symb")
     private String description;
     private Date createdAt = new Date();
-
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserProjectRole> userProjectRoles = new HashSet<>();
 

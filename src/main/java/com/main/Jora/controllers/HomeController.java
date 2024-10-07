@@ -1,8 +1,8 @@
 package com.main.Jora.controllers;
 
+import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
-import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.services.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +12,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/home")
 public class HomeController {
-    @Autowired
-    ProjectRepository projectRepository;
     @Autowired
     ProjectService projectService;
 
@@ -33,12 +30,13 @@ public class HomeController {
         }
         return new User();
     }
-    @GetMapping
-    public String home(Model model){
-        User curUser = getUser();
-        model.addAttribute("projects", projectService.getProjectsForUser(curUser));
-        return "home";
+    @ModelAttribute(name = "projects")
+    public List<Project> getProjects(){
+        User user = getUser();
+        return projectService.getProjectsForUser(user);
     }
+    @GetMapping
+    public String home(){return "home";}
     @GetMapping("/create")
     public String newProject(){
         return "create-project";
@@ -56,5 +54,21 @@ public class HomeController {
         }
         projectService.saveProject(project, user);
         return "redirect:/home";
+    }
+    @PostMapping("/join")
+    public String joinToProject(@RequestParam("project_hash") String project_hash,
+                                @AuthenticationPrincipal User user,
+                                Model model){
+        try{
+            projectService.addUserToProject(project_hash, user);
+        } catch (CustomException.UserAlreadyJoinedException ex){
+            model.addAttribute("userError", "Пользователь уже добавлен");
+            return "home";
+        } catch (CustomException.UserBannedException ex){
+            model.addAttribute("userError", "Вы забанены");
+            return "home";
+        }
+
+        return "redirect:/projects/" + project_hash + "/group";
     }
 }

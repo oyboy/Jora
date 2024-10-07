@@ -3,6 +3,8 @@ package com.main.Jora.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
+@EqualsAndHashCode
+@ToString
 @Data
 public class User implements UserDetails {
     @Id
@@ -32,6 +36,8 @@ public class User implements UserDetails {
     @Size(min=3, message = "Почта должна быть больше 3 символов") //Заменить на pattern
     private String email;
     private boolean active;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserProjectRole> userProjectRoles = new HashSet<>();
     @Override
@@ -60,4 +66,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return active;
     }
+
+
 }
