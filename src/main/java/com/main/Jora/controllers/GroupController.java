@@ -35,7 +35,13 @@ public class GroupController {
     }
 
     @GetMapping
-    public String getGroup(){
+    public String getGroup(@AuthenticationPrincipal User currentUser,
+                           @PathVariable("project_hash") String project_hash,
+                           Model model){
+        Project project = projectRepository.findProjectByHash(project_hash);
+        UserProjectRole currentUserRole = userProjectRoleReposirory
+                .getUserProjectRoleByUserAndProject(currentUser, project);
+        model.addAttribute("currentUserRole", currentUserRole);
         return "group";
     }
     @PostMapping("/ban")

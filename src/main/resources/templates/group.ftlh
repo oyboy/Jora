@@ -2,14 +2,17 @@
 <@c.page>
     <a href="/home">to projects</a>
     <h2>Welcome to group</h2>
-    <form action="/projects/${project_hash}/group/ban" method="post">
-        <label for="email">
-            Email: <input type="text" name="email">
-        </label>
-        <br>
-        <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <button type="submit">Забанить / разбанить</button>
-    </form>
+    <#if currentUserRole.role?string == "ROLE_LEADER">
+        <form action="/projects/${project_hash}/group/ban" method="post">
+            <label for="email">
+                Email: <input type="text" name="email">
+            </label>
+            <br>
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <button type="submit">Забанить / разбанить</button>
+        </form>
+    </#if>
+
     <#if emailNotFound??>
         <div class="error">${emailNotFound}</div>
     </#if>
