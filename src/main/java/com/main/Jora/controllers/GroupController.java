@@ -27,13 +27,14 @@ public class GroupController {
 
     @Autowired
     GroupService groupService;
-
+    //В шаблоне нужно вывести данные о пользователях и их ролях
     @ModelAttribute(name = "usersAndRoles")
     public List<UserProjectRole> getUsersAndRoles(@PathVariable("project_hash") String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
         return userProjectRoleReposirory.findUsersAndRolesByProjectId(project_id);
     }
-
+    //Достаточно было бы usersAndRoles, но тут также нужно передать и текущую сессию
+    //Поскольку данных о роли нет в таблице user, нужно сделать запрос в связанную таблицу
     @GetMapping
     public String getGroup(@AuthenticationPrincipal User currentUser,
                            @PathVariable("project_hash") String project_hash,
@@ -55,6 +56,7 @@ public class GroupController {
             model.addAttribute("emailNotFound", "Нет пользователя с таким email");
             return "group";
         }
+        //Проверка, не пытается ли создатель забанить сам себя
         if (user.getEmail().equals(currentUser.getEmail())){
             model.addAttribute("suicideError", "Самовыпил запрещён!");
             return "group";

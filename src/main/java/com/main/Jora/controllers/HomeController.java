@@ -21,7 +21,7 @@ import java.util.List;
 public class HomeController {
     @Autowired
     ProjectService projectService;
-
+    //Данные о текущем пользователе
     @ModelAttribute(name = "user")
     public User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -30,6 +30,7 @@ public class HomeController {
         }
         return new User();
     }
+    //Список доступных пользователю проектов (те, в которых он состоит)
     @ModelAttribute(name = "projects")
     public List<Project> getProjects(){
         User user = getUser();
@@ -55,6 +56,8 @@ public class HomeController {
         projectService.saveProject(project, user);
         return "redirect:/home";
     }
+    //Присоединение к проекту
+    //@Valid по полям отсутствует, поэтому созданы собственные исключения
     @PostMapping("/join")
     public String joinToProject(@RequestParam("project_hash") String project_hash,
                                 @AuthenticationPrincipal User user,

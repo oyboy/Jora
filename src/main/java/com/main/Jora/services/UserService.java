@@ -24,7 +24,4 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
-    public void saveUser(User user){
-        userRepository.save(user);
-    }
 }

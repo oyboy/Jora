@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
+    //Поиск пользователя должен происходить по email, а не username
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {

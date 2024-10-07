@@ -35,7 +35,7 @@ public class ProjectService {
         userProjectRole.setRole(Role.ROLE_LEADER);
 
         project.getUserProjectRoles().add(userProjectRole);
-        user.getUserProjectRoles().add(userProjectRole);
+        user.getUserProjectRoles().add(userProjectRole); //Думаю, это лишнее, если не вызывается нужный репозиторий
 
         //Сохранение
         projectRepository.save(project);
@@ -58,12 +58,12 @@ public class ProjectService {
             log.warn("User {} is already a member of project {}", user.getId(), project.getId());
             throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к проекту"); // Или выбрасываем исключение, если нужно
         }
-
+        //Если связи нет, создаём новую запись в связанной таблице
         UserProjectRole userProjectRole = new UserProjectRole();
         userProjectRole.setProject(project);
         userProjectRole.setUser(user);
         userProjectRole.setRole(Role.ROLE_PARTICIPANT);
-
+        //Сохраняем её
         log.info("Saving relation: {}", userProjectRole);
         userProjectRoleReposirory.save(userProjectRole);
     }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface UserProjectRoleReposirory extends CrudRepository<UserProjectRole, Long> {
-   //Добавить доп условие, что не забанен
    @Query("SELECT p " +
            "FROM Project p " +
            "JOIN UserProjectRole upr " +

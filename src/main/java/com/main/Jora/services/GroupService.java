@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class GroupService {
     @Autowired
     UserProjectRoleReposirory userProjectRoleReposirory;
-
+    //Тут нужно только вернуть запись из связанной таблице и поменять в ней поле banned
     public void banUser(User user, Project project){
         UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
         userProjectRole.setBanned(!userProjectRole.isBanned());

@@ -13,6 +13,11 @@ import java.sql.SQLSyntaxErrorException;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    //Ситация: пользователь оказался на странице, которую удалил админ
+    // (напр, удалили из таблицы проект) и получил ошибку 500.
+    // Нужно её обработать и перебросить пользователя на страницу, которая точно не может быть удалена
+    //Для этого перехвачено нужное исключение и выполнен редирект на главную страницу
+    //Это вроде бы ещё работает, если пользователь пытается в url перейти по неправильному хешу
     @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleSQLException(SQLSyntaxErrorException ex) {
