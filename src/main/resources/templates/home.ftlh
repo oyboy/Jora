@@ -13,6 +13,17 @@
         <a href="login">Войти</a>
     </#if>
     </div>
+
+    <form action="/home/join" method="post">
+        <label for="project_hash">Ссылка: </label>
+        <input type="text" id="project_hash" name="project_hash">
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
+        <button type="submit">Присоединиться</button>
+    </form>
+    <#if userError??>
+        <div class="error">${userError}</div>
+    </#if>
+
     <form action="/home/create" method="get">
         <input type="submit" value="+"/>
     </form>
@@ -23,6 +34,7 @@
         <p>${project.description}</p>
         <i>${project.createdAt?date}</i>
         <a href="/projects/${project.hash}/tasks">Go to tasks</a>
+        <a href="/projects/${project.hash}/group">To group</a>
     </div>
     <#else>
     <h2>У вас ещё нет проектов. <a href="/home/create">Создать?</a></h2>

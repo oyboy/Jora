@@ -1,20 +1,21 @@
 package com.main.Jora.models;
 
-import com.main.Jora.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 @Entity
+@EqualsAndHashCode
+@ToString
 @Data
 public class User implements UserDetails {
     @Id
@@ -35,22 +36,15 @@ public class User implements UserDetails {
     @Size(min=3, message = "Почта должна быть больше 3 символов") //Заменить на pattern
     private String email;
     private boolean active;
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-    private Set<Role> roles = new HashSet<>();
-    //Является приоритетной ссылкой
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_project",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
-    )
-    private Set<Project> projects = new HashSet<>();
-
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<UserProjectRole> userProjectRoles = new HashSet<>();
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return userProjectRoles.stream()
+                .map(UserProjectRole::getRole)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -73,23 +67,5 @@ public class User implements UserDetails {
         return active;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                '}';
-    }
 }

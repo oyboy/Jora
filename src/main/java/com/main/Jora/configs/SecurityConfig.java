@@ -18,8 +18,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/home", "/registration", "/static/**").permitAll()
-                        .requestMatchers("/home/**", "/projects/**")
-                        .hasAnyAuthority("ROLE_LEADER", "ROLE_PARTICIPANT")
+                        .requestMatchers("/home/**", "/projects/**").permitAll()
+                        //.hasAnyAuthority("ROLE_LEADER", "ROLE_PARTICIPANT")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

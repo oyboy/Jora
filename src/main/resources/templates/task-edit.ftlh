@@ -41,6 +41,7 @@
                     ${(task.status == "DONE")?then("selected","")}>Done</option>
         </select>
 
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
         <input type="hidden" name="task_id" value="${task.id}">
         <button type="submit">Сохранить</button>
     </form>
