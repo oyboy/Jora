@@ -16,6 +16,13 @@
         </#if>
         <br>
 
+        <label for="deadline">Дата завершения:</label>
+        <input type="datetime-local" name="deadline" value="${task.deadline?if_exists}">
+        <#if errors?? && errors.getFieldError("deadline")??>
+            <div class="error">${errors.getFieldError("deadline").defaultMessage}</div>
+        </#if>
+        <br>
+
         <label>Приоритет:</label>
         <label>
             <input type="radio" name="priority" value="LOW"

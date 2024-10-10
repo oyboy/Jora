@@ -3,11 +3,30 @@
     <h1>Task list</h1>
     <a href="/home">К проектам</a>
     <h1>Список задач</h1>
-    <table style="border: 1px">
+
+    <form action="/projects/${project.hash}/tasks" method="get" id="filterForm">
+        <label for="deadlineFilter">Фильтр по дедлайну:</label>
+        <select name="deadlineFilter" id="deadlineFilter">
+            <option value="today">На сегодня</option>
+            <option value="tomorrow">На завтра</option>
+            <option value="thisMonth">На месяц</option>
+            <option value="noDeadline">Без срока</option>
+        </select>
+        <button type="submit">Фильтровать</button>
+        <button type="reset" id="resetButton">Сбросить фильтр</button>
+    </form>
+    <script>
+        document.getElementById('resetButton').addEventListener('click', function() {
+            document.getElementById('deadlineFilter').value = "";
+            document.getElementById('filterForm').submit();
+        });
+    </script>
+
+    <table>
         <tr>
-            <th colspan="6">Created</th>
-            <th colspan="6">In progress</th>
-            <th colspan="6">Done</th>
+            <th colspan="7">Created</th>
+            <th colspan="7">In progress</th>
+            <th colspan="7">Done</th>
         </tr>
         <tr>
             <td>ID</td>
@@ -16,6 +35,7 @@
             <td>Приоритет</td>
             <td>Статус</td>
             <td>Дата создания</td>
+            <td>Срок выполнения</td>
         </tr>
         <#list tasks as task>
             <tr>
@@ -25,6 +45,12 @@
                 <td><i>${task.priority}</i></td>
                 <td><i>${task.status}</i></td>
                 <td><i>${task.createdAt}</i></td>
+                <#if task.deadline??>
+                    <td><i>${task.deadline}</i></td>
+                    <#else>
+                    <td><i>Без срока</i></td>
+                </#if>
+
             </tr>
             <#else>
             <h3>Нет созданных задач</h3>
@@ -43,6 +69,18 @@
         <input type="text" id="description" name="description">
         <#if errors?? && errors.getFieldError("description")??>
             <div class="error">${errors.getFieldError("description").defaultMessage}</div>
+        </#if>
+        <br>
+
+        <label for="deadline">Дата завершения:</label>
+        <input type="datetime-local" name="deadline" id="deadline">
+        <script>
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('deadline').value = formattedDate;
+        </script>
+        <#if errors?? && errors.getFieldError("deadline")??>
+            <div class="error">${errors.getFieldError("deadline").defaultMessage}</div>
         </#if>
         <br>
 

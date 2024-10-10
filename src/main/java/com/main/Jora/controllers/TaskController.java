@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Controller
@@ -31,12 +32,13 @@ public class TaskController {
     }
 
     @ModelAttribute("tasks")
-    public Iterable<Task> getTasksModel(@PathVariable String project_hash) {
+    public Iterable<Task> getTasksModel(@PathVariable String project_hash,
+                                        @RequestParam(required = false) String deadlineFilter) {
         Long project_id = projectRepository.findIdByHash(project_hash);
         if (project_id == null) {
             return new ArrayList<>();
         }
-        return taskService.findAllTasks(project_id);
+        return taskService.findTasksByTimeLine(project_id, deadlineFilter);
     }
 
     @GetMapping
@@ -51,6 +53,11 @@ public class TaskController {
                              Errors errors,
                              @PathVariable String project_hash,
                              Model model){
+        task.setCreatedAt(LocalDateTime.now());
+        if (task.getDeadline() != null && task.getDeadline().isBefore(task.getCreatedAt())) {
+            errors.rejectValue("deadline", "Deadline must be after creation date",
+                    "Deadline cannot be earlier than the created date.");
+        }
         if (errors.hasErrors()){
             errors.getAllErrors().forEach(error -> {
                 System.out.println("Error in task_controller_creator: " + error);
