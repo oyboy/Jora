@@ -1,11 +1,16 @@
 package com.main.Jora.controllers;
 
+import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Task;
+import com.main.Jora.models.User;
+import com.main.Jora.models.UserTask;
 import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.UserTaskRepository;
 import com.main.Jora.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/projects/{project_hash}/tasks")
@@ -21,6 +27,8 @@ public class TaskController {
     ProjectRepository projectRepository;
     @Autowired
     TaskService taskService;
+    @Autowired
+    UserTaskRepository userTaskRepository;
 
     @ModelAttribute("project")
     public Project getProject(@PathVariable String project_hash) {
@@ -40,19 +48,24 @@ public class TaskController {
         }
         return taskService.findTasksByTimeLine(project_id, deadlineFilter);
     }
+    @ModelAttribute("usersAndTasks")
+    public List<UserTask> getUsersAndTasks(@PathVariable("project_hash") String project_hash){
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        return userTaskRepository.findAllByProjectId(project_id);
+    }
 
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
         if (project_id == null) return "redirect:/home";
-
         return "tasks";
     }
     @PostMapping//Нормально
     public String createTask(@Valid @ModelAttribute("task") Task task,
                              Errors errors,
                              @PathVariable String project_hash,
-                             Model model){
+                             Model model,
+                             @AuthenticationPrincipal User user){
         task.setCreatedAt(LocalDateTime.now());
         if (task.getDeadline() != null && task.getDeadline().isBefore(task.getCreatedAt())) {
             errors.rejectValue("deadline", "Deadline must be after creation date",
@@ -65,7 +78,7 @@ public class TaskController {
             model.addAttribute("errors", errors);
             return "tasks";
         }
-        taskService.addTask(task, project_hash);
+        taskService.addTask(task, project_hash, user);
         return "redirect:/projects/{project_hash}/tasks";
     }
     @GetMapping("/edit/{task_id}")
@@ -93,5 +106,20 @@ public class TaskController {
         }
         taskService.changeTaskFieldsAndSave(task_id, form);
         return "redirect:/projects/{project_hash}/tasks";
+    }
+    @PostMapping("/edit/join")
+    public String joinToTask(@RequestParam("task_id") Long task_id,
+                             @AuthenticationPrincipal User user,
+                             @PathVariable("project_hash") String project_hash,
+                             Model model){
+        try{
+            taskService.addUserToTask(taskService.getTaskById(task_id), project_hash, user);
+        } catch (CustomException.UserAlreadyJoinedException ex){
+            Task task = taskService.getTaskById(task_id);
+            model.addAttribute("task", task);
+            model.addAttribute("userError", "Вы уже участник");
+            return "task-edit";
+        }
+        return "redirect:/projects/" + project_hash + "/tasks";
     }
 }

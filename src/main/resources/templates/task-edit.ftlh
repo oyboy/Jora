@@ -1,6 +1,16 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
     <h1>Task edit</h1>
+
+    <form action="/projects/${project_hash}/tasks/edit/join" method="post">
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
+        <input type="hidden" name="task_id" value="${task.id}">
+        <button type="submit">Присоединиться</button>
+    </form>
+    <#if userError??>
+        <div class="error">${userError}</div>
+    </#if>
+
     <form action="/projects/${project_hash}/tasks/edit" method="post">
         <label for="name">Название:</label>
         <input type="text" id="name" name="name" value="${task.name}" required>

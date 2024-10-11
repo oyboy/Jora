@@ -1,9 +1,13 @@
 package com.main.Jora.services;
 
+import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Task;
+import com.main.Jora.models.User;
+import com.main.Jora.models.UserTask;
 import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.repositories.TaskRepository;
+import com.main.Jora.repositories.UserTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,15 +22,38 @@ public class TaskService {
     TaskRepository taskRepository;
     @Autowired
     ProjectRepository projectRepository;
-    public void addTask(Task task, String project_hash){
+    @Autowired
+    UserTaskRepository userTaskRepository;
+    public void addTask(Task task, String project_hash, User user){
         Long project_id = projectRepository.findIdByHash(project_hash);
         Project projectFromDb = projectRepository.findById(project_id).orElse(null);
 
         projectFromDb.getTaskList().add(task);
         log.info("Setting task {} to project {}", task, projectFromDb);
         task.setProject(projectFromDb);
+
+        UserTask userTask = new UserTask();
+        userTask.setUser(user);
+        userTask.setTask(task);
+        userTask.setProject(projectFromDb);
+        userTaskRepository.save(userTask);
+        task.getUserTasks().add(userTask);
+
         log.info("Saving task: {}", task);
         taskRepository.save(task);
+    }
+    public void addUserToTask(Task task, String project_hash, User user) throws CustomException.UserAlreadyJoinedException{
+        Project project = projectRepository.findProjectByHash(project_hash);
+        if (userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId())) {
+            log.warn("User {} is already a member of task {}", user.getId(), task.getId());
+            throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к задаче"); // Или выбрасываем исключение, если нужно
+        }
+        UserTask userTask = new UserTask();
+        userTask.setUser(user);
+        userTask.setTask(task);
+        userTask.setProject(project);
+        log.info("Saving user {} to task {}", user, task);
+        userTaskRepository.save(userTask);
     }
     public Task getTaskById(Long task_id){
         return taskRepository.findById(task_id).orElse(null);

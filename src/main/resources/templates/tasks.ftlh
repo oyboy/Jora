@@ -34,8 +34,8 @@
             <td>Описание</td>
             <td>Приоритет</td>
             <td>Статус</td>
-            <td>Дата создания</td>
-            <td>Срок выполнения</td>
+            <td>Дата создания / Срок выполнения</td>
+            <td>Автор</td>
         </tr>
         <#list tasks as task>
             <tr>
@@ -44,13 +44,21 @@
                 <td><p>${task.description}</p></td>
                 <td><i>${task.priority}</i></td>
                 <td><i>${task.status}</i></td>
-                <td><i>${task.createdAt}</i></td>
-                <#if task.deadline??>
-                    <td><i>${task.deadline}</i></td>
+                <td><i>${task.createdAt} |
+                        <#if task.deadline??>
+                            ${task.deadline}
+                            <#else>
+                                Без срока
+                        </#if>
+                </i></td>
+                <td>
+                    <#assign taskUsers = usersAndTasks?filter(ut -> ut.task.id == task.id) />
+                    <#list taskUsers as userTask>
+                        <p>${userTask.user.username} (${userTask.user.email})</p>
                     <#else>
-                    <td><i>Без срока</i></td>
-                </#if>
-
+                        <p>Нет привязанных пользователей</p>
+                    </#list>
+                </td>
             </tr>
             <#else>
             <h3>Нет созданных задач</h3>

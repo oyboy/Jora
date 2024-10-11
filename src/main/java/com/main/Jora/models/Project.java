@@ -35,6 +35,11 @@ public class Project {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")
     private List<Task> taskList = new ArrayList<>();
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<UserTask> userTasks = new HashSet<>();
     @NotNull
     @Column(unique = true)
     private String hash = this.generateHash();

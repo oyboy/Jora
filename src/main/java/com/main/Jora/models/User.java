@@ -40,6 +40,13 @@ public class User implements UserDetails {
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserProjectRole> userProjectRoles = new HashSet<>();
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<UserTask> userTasks = new HashSet<>();
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userProjectRoles.stream()
@@ -66,6 +73,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return active;
     }
-
-
 }
