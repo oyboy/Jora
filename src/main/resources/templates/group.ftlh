@@ -58,6 +58,12 @@
         <b>${userAndTag.user.username}</b>
         <p>${userAndTag.user.email}</p>
         <p>${userAndTag.role}</p>
+        <form action="/projects/${project_hash}/group/change-role" method="post">
+            <input type="hidden" name="email" value="${userAndTag.user.email}">
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <button type="submit" name="action" value="PROMOTE">↑ Повысить роль</button>
+            <button type="submit" name="action" value="DEMOTE">↓ Понизить роль</button>
+        </form>
         <ul>
             <#if userAndTag.tags?has_content>
                 <#list userAndTag.tags as tag>

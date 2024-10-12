@@ -1,6 +1,7 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Tag;
 import com.main.Jora.models.User;
@@ -105,5 +106,14 @@ public class GroupController {
         }
         groupService.banUser(user, project);
         return "redirect:/projects/"+ project_hash + "/group";
+    }
+    @PostMapping("/change-role")
+    public String changeUserRole(@PathVariable("project_hash") String project_hash,
+                                 @RequestParam("email") String email,
+                                 @RequestParam("action") String action) {
+        User user = userRepository.findByEmail(email);
+        Project project = projectRepository.findProjectByHash(project_hash);
+        groupService.changeUserRole(user, project, action);
+        return "redirect:/projects/" + project_hash + "/group";
     }
 }

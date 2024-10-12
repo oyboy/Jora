@@ -1,5 +1,6 @@
 package com.main.Jora.repositories;
 
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
 import com.main.Jora.models.UserProjectRole;
@@ -33,4 +34,9 @@ public interface UserProjectRoleReposirory extends CrudRepository<UserProjectRol
    boolean isUserBanned(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
    UserProjectRole getUserProjectRoleByUserAndProject(User user, Project project);
+
+   @Query("SELECT upr.role " +
+           "FROM UserProjectRole upr " +
+           "WHERE upr.user.id = :userId AND upr.project.id = :projectId")
+   Role findRoleByUserAndProject(@Param("userId") Long userId, @Param("projectId") Long projectId);
 }

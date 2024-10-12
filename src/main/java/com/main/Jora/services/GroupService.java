@@ -1,6 +1,7 @@
 package com.main.Jora.services;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Tag;
 import com.main.Jora.models.User;
@@ -24,7 +25,32 @@ public class GroupService {
     ProjectRepository projectRepository;
     @Autowired
     UserRepository userRepository;
-    //Тут нужно только вернуть запись из связанной таблицы и поменять в ней поле banned
+    public void changeUserRole(User user, Project project, String action) {
+        Role currentRole = userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project.getId());
+        Role newRole = currentRole;
+        if ("PROMOTE".equals(action)) {
+            if (currentRole == Role.ROLE_PARTICIPANT) {
+                newRole = Role.ROLE_MODERATOR;
+            } else if (currentRole == Role.ROLE_MODERATOR) {
+                newRole = Role.ROLE_LEADER;
+            }
+        } else if ("DEMOTE".equals(action)) {
+            if (currentRole == Role.ROLE_LEADER) {
+                newRole = Role.ROLE_MODERATOR;
+            } else if (currentRole == Role.ROLE_MODERATOR) {
+                newRole = Role.ROLE_PARTICIPANT;
+            }
+        }
+        if (newRole != currentRole) {
+            changeRole(user, newRole, project);
+        }
+    }
+    private void changeRole(User user, Role role, Project project) {
+        UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
+        userProjectRole.setRole(role);
+        log.info("Changing role {} for user {}", role, user);
+        userProjectRoleReposirory.save(userProjectRole);
+    }
     public void banUser(User user, Project project){
         UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
         userProjectRole.setBanned(!userProjectRole.isBanned());
@@ -36,7 +62,7 @@ public class GroupService {
         if (tagName.length() > 50) throw new CustomException.LargeSizeException("");
         Project project = projectRepository.findProjectByHash(project_hash);
 
-        if (tagRepository.findTagByTagName(tagName) != null){ //Can be failed
+        if (tagRepository.findTagByTagName(tagName) != null){
             throw new CustomException.ObjectExistsException("Тег уже создан");
         }
         Tag tag = new Tag();
@@ -50,7 +76,6 @@ public class GroupService {
         log.info("Setting tag to project");
     }
     public void setTagToUser(String email, String project_hash, String tagName){
-        Long project_id = projectRepository.findIdByHash(project_hash);
         User user = userRepository.findByEmail(email);
         Tag tag = tagRepository.findTagByTagName(tagName);
         if (user.getTags().contains(tag)){
