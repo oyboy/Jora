@@ -12,4 +12,10 @@ public class CustomException{
             super(message);
         }
     }
+    public static class LargeSizeException extends Exception{
+        public LargeSizeException(String message) {super(message);}
+    }
+    public static class ObjectExistsException extends Exception{
+        public ObjectExistsException(String message){super(message);}
+    }
 }

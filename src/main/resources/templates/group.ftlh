@@ -12,16 +12,61 @@
             <button type="submit">Забанить / разбанить</button>
         </form>
     </#if>
-
     <#if emailNotFound??>
         <div class="error">${emailNotFound}</div>
     </#if>
     <#if suicideError??>
         <div class="error">${suicideError}</div>
     </#if>
-    <#list usersAndRoles as userRole>
-        <b>${userRole.user.username}</b>
-        <p>${userRole.user.email}</p>
-        <p>${userRole.role}</p>
+
+        <h4>Создать новый тег</h4>
+        <form action="/projects/${project_hash}/group/tag-add" method="post">
+            <label for="tagName">
+                Название тега: <input type="text" name="tagName">
+            </label>
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <button type="submit">Создать</button>
+        </form>
+        <#if sizeException??>
+            <div class="error">${sizeException}</div>
+        </#if>
+        <#if existsException??>
+            <div class="error">${existsException}</div>
+        </#if>
+    <br>
+
+    <h4>Назначить тег</h4>
+    <form action="/projects/${project_hash}/group/tag-set" method="post">
+        <label for="tagName">Название тега: </label>
+        <select name="tagName" id="tagName">
+            <#list tagsForProject as tag>
+                <option value="${tag.name}">${tag.name}</option>
+            </#list>
+        </select>
+        <label for="email">Пользователь: </label>
+        <select name="email" id="email">
+            <#list usersAndTags as userAndTag>
+                <option value="${userAndTag.user.email}">${userAndTag.user.email}</option>
+            </#list>
+        </select>
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
+        <button type="submit">Назначить</button>
+    </form>
+
+    <h4>Пользователи: </h4>
+    <#list usersAndTags as userAndTag>
+        <b>${userAndTag.user.username}</b>
+        <p>${userAndTag.user.email}</p>
+        <p>${userAndTag.role}</p>
+        <ul>
+            <#if userAndTag.tags?has_content>
+                <#list userAndTag.tags as tag>
+                    <li>${tag.name}</li>
+                </#list>
+            <#else>
+                <p>Нет привязанных тегов</p>
+            </#if>
+        </ul>
     </#list>
+
 </@c.page>

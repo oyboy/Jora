@@ -1,11 +1,11 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
-import com.main.Jora.models.Project;
-import com.main.Jora.models.Task;
-import com.main.Jora.models.User;
-import com.main.Jora.models.UserTask;
+import com.main.Jora.models.*;
+import com.main.Jora.models.dto.TaskTagsDTO;
+import com.main.Jora.models.dto.UserTagsDTO;
 import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserTaskRepository;
 import com.main.Jora.services.TaskService;
 import jakarta.validation.Valid;
@@ -29,6 +29,8 @@ public class TaskController {
     TaskService taskService;
     @Autowired
     UserTaskRepository userTaskRepository;
+    @Autowired
+    TagRepository tagRepository;
 
     @ModelAttribute("project")
     public Project getProject(@PathVariable String project_hash) {
@@ -106,6 +108,39 @@ public class TaskController {
         }
         taskService.changeTaskFieldsAndSave(task_id, form);
         return "redirect:/projects/{project_hash}/tasks";
+    }
+    @ModelAttribute(name = "tagsForProject")
+    public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        return tagRepository.findTagsByProjectId(project_id);
+    }
+    @ModelAttribute(name = "tasksAndTags")
+    public List<TaskTagsDTO> getTasksWithTags(@PathVariable("project_hash") String project_hash) {
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        Iterable<Task> tasks = taskService.findAllTasks(project_id);
+
+        List<TaskTagsDTO> tasksWithTags = new ArrayList<>();
+        for (Task task : tasks) {
+            List<Tag> tags = task.getTags();
+            tasksWithTags.add(new TaskTagsDTO(task, tags));
+        }
+        return tasksWithTags;
+    }
+    @PostMapping("/tag-set")
+    public String setTag(@RequestParam(value = "taskId", required = false) Long taskId,
+                         @RequestParam("tagName") String tagName,
+                         @PathVariable("project_hash") String project_hash,
+                         Model model){
+        if (taskId == null){
+            model.addAttribute("idException", "Нужно указать id");
+            return "tasks";
+        }
+        if (taskService.getTaskById(taskId) == null){
+            model.addAttribute("idException", "Нет задачи с таким id");
+            return "tasks";
+        }
+        taskService.setTagToTask(taskId, tagName);
+        return "redirect:/projects/" + project_hash + "/tasks";
     }
     @PostMapping("/edit/join")
     public String joinToTask(@RequestParam("task_id") Long task_id,

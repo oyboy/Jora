@@ -32,27 +32,38 @@
             <td>ID</td>
             <td>Название</td>
             <td>Описание</td>
-            <td>Приоритет</td>
-            <td>Статус</td>
+            <td>Приоритет | Статус</td>
+            <td>Теги</td>
             <td>Дата создания / Срок выполнения</td>
             <td>Автор</td>
         </tr>
-        <#list tasks as task>
+        <#list tasksAndTags as taskTagsDTO>
             <tr>
-                <td><h4>${task.id}</h4></td>
-                <td><h2><a href="/projects/${project.hash}/tasks/edit/${task.id}">${task.name}</a></h2></td>
-                <td><p>${task.description}</p></td>
-                <td><i>${task.priority}</i></td>
-                <td><i>${task.status}</i></td>
-                <td><i>${task.createdAt} |
-                        <#if task.deadline??>
-                            ${task.deadline}
-                            <#else>
-                                Без срока
-                        </#if>
-                </i></td>
+                <td><h4>${taskTagsDTO.task.id}</h4></td>
+                <td><h2><a href="/projects/${project.hash}/tasks/edit/${taskTagsDTO.task.id}">${taskTagsDTO.task.name}</a></h2></td>
+                <td><p>${taskTagsDTO.task.description}</p></td>
                 <td>
-                    <#assign taskUsers = usersAndTasks?filter(ut -> ut.task.id == task.id) />
+                    <i>${taskTagsDTO.task.priority}</i> |
+                    <i>${taskTagsDTO.task.status}</i>
+                </td>
+                <td>
+                    <ul>
+                        <#list taskTagsDTO.tags as tag>
+                            <li>${tag.name}</li>
+                            <#else>
+                            <p>Нет тегов</p>
+                        </#list>
+                    </ul>
+                </td>
+                <td><i>${taskTagsDTO.task.createdAt} |
+                        <#if taskTagsDTO.task.deadline??>
+                            ${taskTagsDTO.task.deadline}
+                        <#else>
+                            Без срока
+                        </#if>
+                    </i></td>
+                <td>
+                    <#assign taskUsers = usersAndTasks?filter(ut -> ut.task.id == taskTagsDTO.task.id) />
                     <#list taskUsers as userTask>
                         <p>${userTask.user.username} (${userTask.user.email})</p>
                     <#else>
@@ -60,10 +71,28 @@
                     </#list>
                 </td>
             </tr>
-            <#else>
+        <#else>
             <h3>Нет созданных задач</h3>
         </#list>
     </table>
+
+    <h2>Назначить тег</h2>
+    <form action="/projects/${project_hash}/tasks/tag-set" method="post">
+        <label for="tagName">Название тега: </label>
+        <select name="tagName" id="tagName">
+            <#list tagsForProject as tag>
+                <option value="${tag.name}">${tag.name}</option>
+            </#list>
+        </select>
+        <label for="taskId">ID задачи: </label>
+        <input type="number" name="taskId">
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
+        <button type="submit">Назначить / Удалить</button>
+    </form>
+    <#if idException??>
+        <div class="error">${idException}</div>
+    </#if>
+
     <h2>Добавить новую задачу</h2>
     <form action="/projects/${project.hash}/tasks" method="post">
         <label for="name">Название:</label>

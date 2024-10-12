@@ -1,9 +1,13 @@
 package com.main.Jora.controllers;
 
+import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.Project;
+import com.main.Jora.models.Tag;
 import com.main.Jora.models.User;
 import com.main.Jora.models.UserProjectRole;
+import com.main.Jora.models.dto.UserTagsDTO;
 import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserRepository;
 import com.main.Jora.services.GroupService;
@@ -12,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,26 +28,64 @@ public class GroupController {
     UserProjectRoleReposirory userProjectRoleReposirory;
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     GroupService groupService;
-    //В шаблоне нужно вывести данные о пользователях и их ролях
-    @ModelAttribute(name = "usersAndRoles")
-    public List<UserProjectRole> getUsersAndRoles(@PathVariable("project_hash") String project_hash){
+    @Autowired
+    TagRepository tagRepository;
+    //Вывод данных о пользователях и их тегах
+    @ModelAttribute(name = "tagsForProject")
+    public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
-        return userProjectRoleReposirory.findUsersAndRolesByProjectId(project_id);
+        return tagRepository.findTagsByProjectId(project_id);
     }
-    //Достаточно было бы usersAndRoles, но тут также нужно передать и текущую сессию
-    //Поскольку данных о роли нет в таблице user, нужно сделать запрос в связанную таблицу
-    @GetMapping
-    public String getGroup(@AuthenticationPrincipal User currentUser,
-                           @PathVariable("project_hash") String project_hash,
-                           Model model){
+    @ModelAttribute(name = "usersAndTags")
+    public List<UserTagsDTO> getUsersWithTags(@PathVariable("project_hash") String project_hash) {
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        List<UserProjectRole> usersAndRoles = userProjectRoleReposirory.findUsersAndRolesByProjectId(project_id);
+
+        List<UserTagsDTO> usersWithTags = new ArrayList<>();
+        for (UserProjectRole userRole : usersAndRoles) {
+            User user = userRole.getUser();
+            List<Tag> tags = user.getTags();
+            usersWithTags.add(new UserTagsDTO(user, tags, userRole.getRole()));
+        }
+        return usersWithTags;
+    }
+    //Нужно также добавить текущую сессию для разграничения прав
+    @ModelAttribute("currentUserRole")
+    public UserProjectRole getCurrentUserRole(@AuthenticationPrincipal User currentUser,
+                                              @PathVariable("project_hash") String project_hash){
         Project project = projectRepository.findProjectByHash(project_hash);
-        UserProjectRole currentUserRole = userProjectRoleReposirory
+        return userProjectRoleReposirory
                 .getUserProjectRoleByUserAndProject(currentUser, project);
-        model.addAttribute("currentUserRole", currentUserRole);
+    }
+    @GetMapping
+    public String getGroup(){
         return "group";
+    }
+    @PostMapping("/tag-add")
+    public String addTag(@PathVariable("project_hash") String project_hash,
+                         @RequestParam("tagName") String tagName,
+                         Model model){
+        try{
+            groupService.createTag(project_hash, tagName);
+        } catch (CustomException.LargeSizeException ex){
+            model.addAttribute("sizeException",
+                    "Название тега не может превышать 50 символов");
+            return "group";
+        } catch (CustomException.ObjectExistsException ex){
+            model.addAttribute("existsException",
+                    "Тег с таким именем уже создан");
+            return "group";
+        }
+        return "redirect:/projects/"+ project_hash + "/group";
+    }
+    @PostMapping("/tag-set")
+    public String setTag(@PathVariable("project_hash") String project_hash,
+                         @RequestParam("tagName") String tagName,
+                         @RequestParam("email") String email){
+        groupService.setTagToUser(email, project_hash, tagName);
+        return "redirect:/projects/"+ project_hash + "/group";
     }
     @PostMapping("/ban")
     public String banUser(@PathVariable("project_hash") String project_hash,

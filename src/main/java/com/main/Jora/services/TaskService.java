@@ -1,11 +1,9 @@
 package com.main.Jora.services;
 
 import com.main.Jora.configs.CustomException;
-import com.main.Jora.models.Project;
-import com.main.Jora.models.Task;
-import com.main.Jora.models.User;
-import com.main.Jora.models.UserTask;
+import com.main.Jora.models.*;
 import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.TaskRepository;
 import com.main.Jora.repositories.UserTaskRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +22,8 @@ public class TaskService {
     ProjectRepository projectRepository;
     @Autowired
     UserTaskRepository userTaskRepository;
+    @Autowired
+    TagRepository tagRepository;
     public void addTask(Task task, String project_hash, User user){
         Long project_id = projectRepository.findIdByHash(project_hash);
         Project projectFromDb = projectRepository.findById(project_id).orElse(null);
@@ -35,7 +35,6 @@ public class TaskService {
         UserTask userTask = new UserTask();
         userTask.setUser(user);
         userTask.setTask(task);
-        userTask.setProject(projectFromDb);
         userTaskRepository.save(userTask);
         task.getUserTasks().add(userTask);
 
@@ -43,7 +42,6 @@ public class TaskService {
         taskRepository.save(task);
     }
     public void addUserToTask(Task task, String project_hash, User user) throws CustomException.UserAlreadyJoinedException{
-        Project project = projectRepository.findProjectByHash(project_hash);
         if (userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId())) {
             log.warn("User {} is already a member of task {}", user.getId(), task.getId());
             throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к задаче"); // Или выбрасываем исключение, если нужно
@@ -51,7 +49,6 @@ public class TaskService {
         UserTask userTask = new UserTask();
         userTask.setUser(user);
         userTask.setTask(task);
-        userTask.setProject(project);
         log.info("Saving user {} to task {}", user, task);
         userTaskRepository.save(userTask);
     }
@@ -91,7 +88,6 @@ public class TaskService {
         return taskRepository.findByProjectIdAndDeadlineIsNull(projectId);
     }
 
-
     //Продолжение танцев с бубнами из @PostMapping("/edit")
     public void changeTaskFieldsAndSave(Long task_id, Task form){
         Task task = taskRepository.findById(task_id).orElse(null);
@@ -101,6 +97,20 @@ public class TaskService {
         task.setStatus(form.getStatus());
         task.setDeadline(form.getDeadline());
         log.info("Saving new params to task: {}", task);
+        taskRepository.save(task);
+    }
+
+    public void setTagToTask(Long task_id, String tagName){
+        Task task = taskRepository.findById(task_id).orElse(null);
+        Tag tag = tagRepository.findTagByTagName(tagName);
+        if (!task.getTags().contains(tag)){
+            log.info("Setting tag {} to task {}", tag, task);
+            task.getTags().add(tag);
+        } else {
+            log.info("Removing tag {} from task {}", tag, task);
+            task.getTags().remove(tag);
+        }
+        log.info("Saving changes");
         taskRepository.save(task);
     }
 }
