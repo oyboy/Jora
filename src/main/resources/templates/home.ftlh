@@ -12,6 +12,7 @@
     <#else >
         <a href="login">Войти</a>
     </#if>
+        <#include "parts/notification.ftlh">
     </div>
 
     <form action="/home/join" method="post">

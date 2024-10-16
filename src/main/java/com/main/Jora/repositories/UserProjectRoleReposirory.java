@@ -39,4 +39,11 @@ public interface UserProjectRoleReposirory extends CrudRepository<UserProjectRol
            "FROM UserProjectRole upr " +
            "WHERE upr.user.id = :userId AND upr.project.id = :projectId")
    Role findRoleByUserAndProject(@Param("userId") Long userId, @Param("projectId") Long projectId);
+
+   @Query("SELECT u " +
+           "FROM User u " +
+           "JOIN UserProjectRole upr " +
+           "ON u.id = upr.user.id " +
+           "WHERE upr.project.id = :projectId AND upr.role = 'ROLE_MODERATOR'")
+   List<User> findModeratorsByProjectId(@Param("projectId") Long projectId);
 }

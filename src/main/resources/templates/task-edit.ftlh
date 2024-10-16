@@ -2,13 +2,27 @@
 <@c.page>
     <h1>Task edit</h1>
 
-    <form action="/projects/${project_hash}/tasks/edit/join" method="post">
-        <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <input type="hidden" name="task_id" value="${task.id}">
-        <button type="submit">Присоединиться</button>
-    </form>
-    <#if userError??>
-        <div class="error">${userError}</div>
+    <#if currentRole != "ROLE_PARTICIPANT">
+        <form action="/projects/${project_hash}/tasks/edit/join" method="post">
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <input type="hidden" name="task_id" value="${task.id}">
+            <button type="submit">Присоединиться</button>
+        </form>
+        <#if userError??>
+            <div class="error">${userError}</div>
+        </#if>
+        <#else>
+        <form action="/projects/${project_hash}/tasks/edit/help" method="post">
+            <input type="hidden" name="_csrf" value="${_csrf.token}">
+            <input type="hidden" name="task_id" value="${task.id}">
+            <button type="submit">Запросить помощь</button>
+        </form>
+            <#if moderNotFound??>
+                <div class="error">${moderNotFound}</div>
+            </#if>
+            <#if notificationResult??>
+                <div class="info">${notificationResult}</div>
+            </#if>
     </#if>
 
     <form action="/projects/${project_hash}/tasks/edit" method="post">

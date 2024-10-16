@@ -14,8 +14,6 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
             "JOIN t.projects p " +
             "WHERE t.name = :tagName")
     Tag findTagByTagName(@Param("tagName") String tagName);
-    @Query("SELECT t FROM Tag t JOIN t.users u WHERE u.id = :userId")
-    List<Tag> findTagsByUserId(@Param("userId") Long userId);
 
     @Query("SELECT t FROM Tag t " +
             "JOIN t.users u " +
@@ -23,4 +21,8 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
             "WHERE u.id = :userId AND p.id = :projectId")
     List<Tag> findTagsByUserIdAndProjectId(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
+    @Query("SELECT t FROM Tag t " +
+            "JOIN t.tasks ts " +
+            "WHERE ts.id = :taskId")
+    List<Tag> findTagsByTaskId(@Param("taskId") Long taskId);
 }

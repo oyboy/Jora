@@ -1,7 +1,6 @@
 package com.main.Jora.configs;
 
 public class CustomException{
-    //Исключения, выбрасываемые при присоединении пользователя к проекту
     public static class UserAlreadyJoinedException extends Exception{
         public UserAlreadyJoinedException(String message) {
             super(message);
@@ -17,5 +16,8 @@ public class CustomException{
     }
     public static class ObjectExistsException extends Exception{
         public ObjectExistsException(String message){super(message);}
+    }
+    public static class UserNotFoundException extends Exception{
+        public UserNotFoundException(String message){super(message);}
     }
 }

@@ -1,17 +1,17 @@
 package com.main.Jora.services;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Status;
 import com.main.Jora.models.*;
-import com.main.Jora.repositories.ProjectRepository;
-import com.main.Jora.repositories.TagRepository;
-import com.main.Jora.repositories.TaskRepository;
-import com.main.Jora.repositories.UserTaskRepository;
+import com.main.Jora.notifications.NotificationService;
+import com.main.Jora.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -23,7 +23,11 @@ public class TaskService {
     @Autowired
     UserTaskRepository userTaskRepository;
     @Autowired
+    UserProjectRoleReposirory userProjectRoleReposirory;
+    @Autowired
     TagRepository tagRepository;
+    @Autowired
+    NotificationService notificationService;
     public void addTask(Task task, String project_hash, User user){
         Long project_id = projectRepository.findIdByHash(project_hash);
         Project projectFromDb = projectRepository.findById(project_id).orElse(null);
@@ -112,5 +116,77 @@ public class TaskService {
         }
         log.info("Saving changes");
         taskRepository.save(task);
+    }
+
+    public void sendHelp(Long task_id) throws CustomException.UserNotFoundException,
+            CustomException.UserAlreadyJoinedException, CustomException.ObjectExistsException{
+        if (userTaskRepository.isModeratorAssignedToTask(task_id)) throw new CustomException.UserAlreadyJoinedException("");
+        List<Tag> task_tags = tagRepository.findTagsByTaskId(task_id);
+        Long project_id = taskRepository.findProjectIdByTaskId(task_id);
+        List<User> moderators = userProjectRoleReposirory.findModeratorsByProjectId(project_id);
+
+        User bestModerator = null;
+        int maxScore = Integer.MIN_VALUE;
+
+        for (User moderator : moderators) {
+            List<Tag> moderatorTags = tagRepository.findTagsByUserIdAndProjectId(moderator.getId(), project_id);
+            int score = calculateTagScore(moderatorTags, task_tags);
+            score -= calculateLoadScore(moderator, project_id);
+
+            if (score > maxScore) {
+                maxScore = score;
+                bestModerator = moderator;
+            }
+        }
+        if (bestModerator == null) throw new CustomException.UserNotFoundException("");
+        log.info("Найден модер {} с коэффициентом {}", bestModerator, maxScore);
+        log.info("Попытка отправить сообщение");
+        notificationService.sendNotificationTo(bestModerator, "Запрос о помощи",
+                generateMessage(task_id, project_id));
+    }
+    private String generateMessage(Long task_id, Long project_id){
+        Task task = taskRepository.findById(task_id).orElse(null);
+        String project_hash = projectRepository.findHashById(project_id);
+        return "Пользователь запросил помощь с задачей " +
+                task.getId() + "/" + task.getName() +
+                "\nСсылка: http://localhost:8080/projects/" + project_hash + "/tasks";
+    }
+    // Oценка по совпадениями тегов
+    private int calculateTagScore(List<Tag> moderatorTags, List<Tag> taskTags){
+        // Set для повышения производительности поиска
+        Set<String> moderatorTagNames = new HashSet<>();
+
+        for (Tag tag : moderatorTags) {
+            moderatorTagNames.add(tag.getName());
+        }
+        int matchScore = 0;
+        for (Tag tag : taskTags) {
+            if (moderatorTagNames.contains(tag.getName())) {
+                matchScore++;
+            }
+        }
+        return matchScore;
+    }
+    // Оценка по загруженности
+    private int calculateLoadScore(User user, Long project_id){
+        List<Task> tasks = taskRepository.findTaskByUserAndProject(user.getId(), project_id);
+        if (tasks.isEmpty()) {
+            return 0; // Если нет задач, коэффициент загруженности равен 0
+        }
+        //Общее количество задач, которые можно взять
+        int totalTasks = tasks.size()
+                - (int) tasks.stream().filter(task -> task.getStatus() == Status.DONE).count()
+                - (int) tasks.stream().filter(task -> task.getStatus() == Status.DELETED).count();
+        //Количество взятых задач
+        int takedTasks = (int) tasks.stream().filter(task -> task.getStatus() == Status.IN_PROGRESS).count();
+        //Количество просроченных задач
+        int overdueTasks = (int) tasks.stream().filter(task ->
+                task.getDeadline() != null &&
+                        task.getDeadline().isBefore(LocalDateTime.now()) &&
+                        task.getStatus() != Status.DONE).count();
+
+        // Итог
+        int occupancyRate = (totalTasks > 0) ? (takedTasks * 100 / totalTasks) + overdueTasks : 0;
+        return Math.max(occupancyRate, occupancyRate*(-1));
     }
 }

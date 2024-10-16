@@ -1,11 +1,13 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.*;
 import com.main.Jora.models.dto.TaskTagsDTO;
 import com.main.Jora.models.dto.UserTagsDTO;
 import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.repositories.TagRepository;
+import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserTaskRepository;
 import com.main.Jora.services.TaskService;
 import jakarta.validation.Valid;
@@ -31,6 +33,8 @@ public class TaskController {
     UserTaskRepository userTaskRepository;
     @Autowired
     TagRepository tagRepository;
+    @Autowired
+    UserProjectRoleReposirory userProjectRoleReposirory;
 
     @ModelAttribute("project")
     public Project getProject(@PathVariable String project_hash) {
@@ -54,6 +58,12 @@ public class TaskController {
     public List<UserTask> getUsersAndTasks(@PathVariable("project_hash") String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
         return userTaskRepository.findAllByProjectId(project_id);
+    }
+    @ModelAttribute("currentRole")
+    public Role getRole(@AuthenticationPrincipal User user,
+                        @PathVariable("project_hash") String project_hash){
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        return userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project_id);
     }
 
     @GetMapping
@@ -83,14 +93,25 @@ public class TaskController {
         taskService.addTask(task, project_hash, user);
         return "redirect:/projects/{project_hash}/tasks";
     }
+    //На уровне контроллера устанавливаем ограничение на редактирование
+    //Редактировать задачу может либо модератор, либо её создатель
     @GetMapping("/edit/{task_id}")
     public String editTask(@PathVariable Long task_id,
                            @PathVariable String project_hash,
+                           @AuthenticationPrincipal User user,
                            Model model){
         Task task = taskService.getTaskById(task_id);
+
+        Role role = getRole(user, project_hash);
+        if (!isAuthorizedToEditTask(task, user, role)) {
+            return "redirect:/projects/{project_hash}/tasks";
+        }
         model.addAttribute("task", task);
         model.addAttribute("project_hash", project_hash);
         return "task-edit";
+    }
+    private boolean isAuthorizedToEditTask(Task task, User user, Role role) {
+        return userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId()) || role == Role.ROLE_MODERATOR;
     }
     @PostMapping("/edit") //Чё-то воняет. Главное, что работает!
     public String editTask(@RequestParam("task_id") Long task_id,
@@ -156,5 +177,25 @@ public class TaskController {
             return "task-edit";
         }
         return "redirect:/projects/" + project_hash + "/tasks";
+    }
+    @PostMapping("/edit/help")
+    public String sendHelp(@RequestParam("task_id") Long task_id,
+                           Model model){
+        try{
+            Task task = taskService.getTaskById(task_id);
+            model.addAttribute("task", task);
+            taskService.sendHelp(task_id);
+        } catch (CustomException.UserNotFoundException ex){
+            model.addAttribute("moderNotFound", "Модератор не найден, вам никто не поможет");
+            return "task-edit";
+        } catch (CustomException.UserAlreadyJoinedException ex){
+            model.addAttribute("moderNotFound", "Модератор уже привязан к этой задаче");
+            return "task-edit";
+        } catch (CustomException.ObjectExistsException ex){
+            model.addAttribute("moderNotFound", "Запрос уже был отправлен");
+            return "task-edit";
+        }
+        model.addAttribute("notificationResult", "Просьба отправлена");
+        return "task-edit";
     }
 }
