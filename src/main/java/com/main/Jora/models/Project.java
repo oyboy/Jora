@@ -1,5 +1,6 @@
 package com.main.Jora.models;
 
+import com.main.Jora.notifications.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -43,6 +44,14 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "project_notification",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "notification_id")
+    )
+    private List<Notification> notifications = new ArrayList<>();
 
     @NotNull
     @Column(unique = true)
