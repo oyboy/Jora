@@ -65,7 +65,10 @@ public class TaskController {
         Long project_id = projectRepository.findIdByHash(project_hash);
         return userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project_id);
     }
-
+    @ModelAttribute("currentUser")
+    public User getCurrentUser(@AuthenticationPrincipal User user){
+        return user;
+    }
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
