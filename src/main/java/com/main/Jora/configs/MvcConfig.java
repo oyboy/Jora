@@ -1,9 +1,11 @@
 package com.main.Jora.configs;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
+@EnableTransactionManagement
 public class MvcConfig implements WebMvcConfigurer {
 
     @Override

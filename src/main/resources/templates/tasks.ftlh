@@ -39,7 +39,7 @@
             <td>Автор</td>
         </tr>
         <#list tasksAndTags as taskTagsDTO>
-            <tr>
+            <tr class="task" data-task-id="${taskTagsDTO.task.id}">
                 <td><h4>${taskTagsDTO.task.id}</h4></td>
                 <td><h2><a href="/projects/${project.hash}/tasks/edit/${taskTagsDTO.task.id}">${taskTagsDTO.task.name}</a></h2></td>
                 <td><p>${taskTagsDTO.task.description}</p></td>
@@ -87,7 +87,9 @@
                         <button class="addCommentButton" data-task-id="${taskTagsDTO.task.id}">Добавить комментарий</button>
                         <input type="hidden" id="projectHash" value="${project.hash}">
                         <input type="hidden" id="currentUsername" value="${currentUser.username}">
+                        <input type="hidden" id="currentUserId" value="${currentUser.id}">
                         <input type="hidden" id="taskId" value="${taskTagsDTO.task.id}">
+                        <input type="hidden" name="_csrf" value="${_csrf.token}">
                     </div>
                     <#----------------->
                 </td>

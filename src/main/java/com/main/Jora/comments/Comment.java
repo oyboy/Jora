@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
     @Column(length = 500)
     @Size(max = 500, message = "Содержание комментария не должно превышать 500 символов")
@@ -29,6 +28,6 @@ public class Comment implements Serializable {
     private LocalDateTime createdAt;
 
     CommentDTO convertToDTO(){
-        return new CommentDTO(this.text, this.user.getUsername(), this.createdAt);
+        return new CommentDTO(this.text, this.user.getUsername(), this.createdAt, this.id);
     }
 }

@@ -63,4 +63,10 @@ tr:nth-child(even) {
 .dropdown li:hover {
     background-color: #f0f0f0;
 }
+/*Непрочитанные комментарии*/
+.new-comment {
+    background-color: white;
+    color: black;
+    border: 2px solid #008CBA;
+}
 
