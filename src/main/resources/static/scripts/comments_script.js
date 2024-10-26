@@ -85,6 +85,44 @@ $(document).ready(function() {
         }
         commentElement.text(formattedText);
 
+        // Обработчик клика по комментарию
+        commentElement.on('click', function() {
+            getReaders(comment.commentId, taskId);
+        });
+        // Функция показа пользователей, прочитавших комментарий
+        function getReaders(commentId, taskId) {
+            $.ajax({
+                url: `/projects/${projectHash}/tasks/${taskId}/api/comments/${commentId}/readers`,
+                method: 'GET',
+                success: function(readByUsers) {
+                    showReaders(readByUsers);
+                },
+                error: function(err) {
+                    console.error("Error fetching read users:", err);
+                }
+            });
+        }
+        function showReaders(readByUsers) {
+            const readerListDiv = document.getElementById('readerList');
+            readerListDiv.innerHTML = ''; // Очистка предыдущих данных
+            document.getElementById("close-button").addEventListener("click", closeModal);
+            // Формируем список пользователей
+            readByUsers.forEach(reader => {
+                if (reader.username !== currentUsername) { // Проверяем, является ли пользователь автором
+                    const readerItem = document.createElement('div');
+                    readerItem.textContent = `${reader.username} (${reader.email}) at ${reader.readAt}`;
+                    readerListDiv.appendChild(readerItem);
+                }
+            });
+            //Имеет смысл показывать окно в том случае, если действительно есть такие пользователи
+            if (readerListDiv.childNodes.length > 0) {
+                document.getElementById('readerModal').style.display = 'block';
+            }
+        }
+        function closeModal() {
+            document.getElementById('readerModal').style.display = 'none';
+        }
+
         // Подключение Intersection Observer для отслеживания
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {

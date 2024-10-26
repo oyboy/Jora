@@ -8,11 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -66,5 +63,11 @@ public class CommentService {
         Long count = userCommentRepository.getUnreadCommentsCount(user.getId(), taskId);
         log.info("Found {} unread comments in {} task", count, taskId);
         return count;
+    }
+    public List<CommentReader> getReadersForComment(Long commentId){
+        log.info("Finding readers in {} comment", commentId);
+        List<CommentReader> foundUsers = userCommentRepository.getReadersForComment(commentId);
+        log.info("Found: {}", foundUsers);
+        return foundUsers;
     }
 }

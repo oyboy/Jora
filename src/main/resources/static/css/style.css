@@ -69,4 +69,37 @@ tr:nth-child(even) {
     color: black;
     border: 2px solid #008CBA;
 }
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Окно фиксированного позиционирования */
+    z-index: 1000; /* Отображение поверх других элементов */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Прокрутка, если необходимо */
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+}
+
+.modal-content {
+    background-color: #fefefe; /* Цвет фона модального окна */
+    margin: 15% auto; /* Центрирование окна */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ширина окна */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
 

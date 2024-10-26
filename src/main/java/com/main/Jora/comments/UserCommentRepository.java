@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface UserCommentRepository extends CrudRepository<UserCommentDTO, Long> {
     @Query("SELECT COUNT(*) " +
             "FROM UserCommentDTO uc " +
@@ -21,5 +23,10 @@ public interface UserCommentRepository extends CrudRepository<UserCommentDTO, Lo
     void updateCommentAsRead(@Param("userId") Long userId,
                              @Param("taskId") Long taskId,
                              @Param("commentId") Long commentId);
-
+    @Query("SELECT new com.main.Jora.comments.CommentReader(u.username, u.email, uc.readAt) " +
+            "FROM User u " +
+            "JOIN UserCommentDTO uc " +
+            "ON uc.userId = u.id " +
+            "WHERE uc.commentId = :commentId AND uc.readAt IS NOT NULL")
+    List<CommentReader> getReadersForComment(@Param("commentId") Long commentId);
 }

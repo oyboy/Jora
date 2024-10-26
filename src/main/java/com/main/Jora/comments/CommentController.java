@@ -3,10 +3,8 @@ package com.main.Jora.comments;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.Jora.models.User;
-import com.main.Jora.repositories.UserTaskRepository;
 import jakarta.persistence.TransactionRequiredException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -65,6 +63,10 @@ public class CommentController {
     public Long getUncreadCount(@AuthenticationPrincipal User user,
                                 @PathVariable("task_id") Long task_id){
         return commentService.getUnreadCommentsCount(user, task_id);
+    }
+    @GetMapping("{commentId}/readers")
+    public List<CommentReader> getReadersForComment(@PathVariable("commentId") Long commentId){
+        return commentService.getReadersForComment(commentId);
     }
 }
 

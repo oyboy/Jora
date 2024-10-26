@@ -92,6 +92,15 @@
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
                     </div>
                     <#----------------->
+                    <#--Поле с читателями комментария-->
+                    <div id="readerModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-button" id="close-button">&times;</span>
+                            <h2>Прочитали:</h2>
+                            <div id="readerList"></div>
+                        </div>
+                    </div>
+                    <#----------------->
                 </td>
             </tr>
         <#else>

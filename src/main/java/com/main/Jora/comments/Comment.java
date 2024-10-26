@@ -28,6 +28,11 @@ public class Comment implements Serializable {
     private LocalDateTime createdAt;
 
     CommentDTO convertToDTO(){
-        return new CommentDTO(this.text, this.user.getUsername(), this.createdAt, this.id);
+        return new CommentDTO(
+                this.text,
+                this.user.getUsername(),
+                this.createdAt,
+                this.id
+        );
     }
 }
