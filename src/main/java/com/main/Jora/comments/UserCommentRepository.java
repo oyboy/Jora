@@ -32,20 +32,21 @@ public interface UserCommentRepository extends CrudRepository<UserCommentDTO, Lo
 
     @Modifying
     @Query(value = """
-    DELETE FROM user_commentdto
-    WHERE comment_id IN (
-        SELECT cr1.comment_id
-        FROM user_commentdto AS cr1
-        WHERE cr1.read_at IS NOT NULL
-        GROUP BY cr1.comment_id, cr1.task_id
-        HAVING COUNT(cr1.user_id) = (
-            SELECT COUNT(cr2.user_id)
-            FROM user_commentdto AS cr2
-            WHERE cr1.comment_id = cr2.comment_id
-            GROUP BY cr2.comment_id
+    WITH temp_id_table AS (
+            SELECT cr1.comment_id
+            FROM user_commentdto AS cr1
+            WHERE cr1.read_at IS NOT NULL
+            GROUP BY cr1.comment_id, cr1.task_id
+            HAVING COUNT(cr1.user_id) = (
+                SELECT COUNT(cr2.user_id)
+                FROM user_commentdto AS cr2
+                WHERE cr1.comment_id = cr2.comment_id
+                GROUP BY cr2.comment_id
+            )
         )
-    );
-""", nativeQuery = true)
+    DELETE FROM user_commentdto
+    WHERE comment_id IN (SELECT * FROM temp_id_table);
+""", nativeQuery = true) //nativeQuery - определяет, что запрос написан на нативном SQL, поскольку HQL вызывал ряд ошибок
     void deleteReadComments();
 
 }

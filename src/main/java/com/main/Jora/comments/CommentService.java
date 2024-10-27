@@ -72,10 +72,10 @@ public class CommentService {
         return foundUsers;
     }
     //Автоудаление прочитанных комментариев
-    /*@Transactional
-    @Scheduled(fixedRate = 6000) //6 секунд
+    @Transactional
+    @Scheduled(fixedRate = 172_800_000) //1 секунда = 1000 / 172_800_800 = 48 часов
     public void cleanReadComments() {
         log.info("removing read comments from db");
         userCommentRepository.deleteReadComments();
-    }*/
+    }
 }
