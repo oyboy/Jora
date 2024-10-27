@@ -172,7 +172,7 @@ public class TaskController {
                              @PathVariable("project_hash") String project_hash,
                              Model model){
         try{
-            taskService.addUserToTask(taskService.getTaskById(task_id), project_hash, user);
+            taskService.addUserToTask(taskService.getTaskById(task_id), user);
         } catch (CustomException.UserAlreadyJoinedException ex){
             Task task = taskService.getTaskById(task_id);
             model.addAttribute("task", task);

@@ -45,7 +45,7 @@ public class TaskService {
         log.info("Saving task: {}", task);
         taskRepository.save(task);
     }
-    public void addUserToTask(Task task, String project_hash, User user) throws CustomException.UserAlreadyJoinedException{
+    public void addUserToTask(Task task, User user) throws CustomException.UserAlreadyJoinedException{
         if (userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId())) {
             log.warn("User {} is already a member of task {}", user.getId(), task.getId());
             throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к задаче"); // Или выбрасываем исключение, если нужно
@@ -132,7 +132,7 @@ public class TaskService {
             List<Tag> moderatorTags = tagRepository.findTagsByUserIdAndProjectId(moderator.getId(), project_id);
             int score = calculateTagScore(moderatorTags, task_tags);
             score -= calculateLoadScore(moderator, project_id);
-
+            log.info("Moderator {} has scores {}", moderator, score);
             if (score > maxScore) {
                 maxScore = score;
                 bestModerator = moderator;
@@ -148,7 +148,7 @@ public class TaskService {
         Task task = taskRepository.findById(task_id).orElse(null);
         String project_hash = projectRepository.findHashById(project_id);
         return "Пользователь запросил помощь с задачей " +
-                task.getId() + "/" + task.getName() +
+                task_id + "/" + task.getName() +
                 "\nСсылка: http://localhost:8080/projects/" + project_hash + "/tasks";
     }
     // Oценка по совпадениями тегов
@@ -173,20 +173,14 @@ public class TaskService {
         if (tasks.isEmpty()) {
             return 0; // Если нет задач, коэффициент загруженности равен 0
         }
-        //Общее количество задач, которые можно взять
-        int totalTasks = tasks.size()
-                - (int) tasks.stream().filter(task -> task.getStatus() == Status.DONE).count()
-                - (int) tasks.stream().filter(task -> task.getStatus() == Status.DELETED).count();
         //Количество взятых задач
-        int takedTasks = (int) tasks.stream().filter(task -> task.getStatus() == Status.IN_PROGRESS).count();
+        int takedTasks = (int) tasks.stream().filter(task -> task.getStatus() == Status.IN_PROGRESS ||
+                task.getStatus() == Status.CREATED).count();
         //Количество просроченных задач
         int overdueTasks = (int) tasks.stream().filter(task ->
                 task.getDeadline() != null &&
                         task.getDeadline().isBefore(LocalDateTime.now()) &&
                         task.getStatus() != Status.DONE).count();
-
-        // Итог
-        int occupancyRate = (totalTasks > 0) ? (takedTasks * 100 / totalTasks) + overdueTasks : 0;
-        return Math.max(occupancyRate, occupancyRate*(-1));
+        return overdueTasks + takedTasks;
     }
 }

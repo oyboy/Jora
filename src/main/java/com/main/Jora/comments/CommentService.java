@@ -61,9 +61,7 @@ public class CommentService {
         }
     }
     public Long getUnreadCommentsCount(User user, Long taskId){
-        Long count = userCommentRepository.getUnreadCommentsCount(user.getId(), taskId);
-        log.info("Found {} unread comments in {} task", count, taskId);
-        return count;
+        return userCommentRepository.getUnreadCommentsCount(user.getId(), taskId);
     }
     public List<CommentReader> getReadersForComment(Long commentId){
         log.info("Finding readers in {} comment", commentId);
