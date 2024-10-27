@@ -11,5 +11,6 @@ import java.time.LocalDateTime;
 public class CommentReader {
     private String username;
     private String email;
+    private Long userId;
     private LocalDateTime readAt;
 }

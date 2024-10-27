@@ -1,7 +1,6 @@
 $(document).ready(function() {
     let stompClient = null;
     const projectHash = $("#projectHash").val();
-    const currentUsername = $('#currentUsername').val();
     const currentUserId = Number($('#currentUserId').val());
     const csrfToken = $('input[name="_csrf"]').val();
 
@@ -29,7 +28,7 @@ $(document).ready(function() {
             stompClient.subscribe('/topic/projects/' + projectHash + '/tasks/' + taskId + "/comment", function (response) {
                 const comment = JSON.parse(response.body);
                 const commentsList = $(`.commentsSection[data-task-id="${taskId}"] .commentsList`);
-                commentsList.append(createCommentElement(comment));
+                commentsList.append(createCommentElement(comment, taskId));
             }.bind(this));
 
             loadComments(taskId); // Загрузка комментариев при открытии
@@ -80,14 +79,17 @@ $(document).ready(function() {
     function createCommentElement(comment, taskId) {
         const commentElement = $("<div>")
         const formattedText = `${comment.text} (от ${comment.username} в ${new Date(comment.createdAt).toLocaleString()})`;
-        if (comment.username === currentUsername) {
+        if (comment.userId === currentUserId) {
             commentElement.css("font-weight", "bold"); // Жирный шрифт для автора
         }
         commentElement.text(formattedText);
 
         // Обработчик клика по комментарию
         commentElement.on('click', function() {
-            getReaders(comment.commentId, taskId);
+            //Только автор может увидеть тех, кто прочитал его коммент
+            if (comment.userId === currentUserId){
+                getReaders(comment.commentId, taskId);
+            }
         });
         // Функция показа пользователей, прочитавших комментарий
         function getReaders(commentId, taskId) {
@@ -108,7 +110,7 @@ $(document).ready(function() {
             document.getElementById("close-button").addEventListener("click", closeModal);
             // Формируем список пользователей
             readByUsers.forEach(reader => {
-                if (reader.username !== currentUsername) { // Проверяем, является ли пользователь автором
+                if (reader.userId !== currentUserId) { // Проверяем, является ли пользователь автором
                     const readerItem = document.createElement('div');
                     readerItem.textContent = `${reader.username} (${reader.email}) at ${reader.readAt}`;
                     readerListDiv.appendChild(readerItem);

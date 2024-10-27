@@ -6,6 +6,7 @@ import com.main.Jora.repositories.TaskRepository;
 import com.main.Jora.repositories.UserTaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -70,4 +71,11 @@ public class CommentService {
         log.info("Found: {}", foundUsers);
         return foundUsers;
     }
+    //Автоудаление прочитанных комментариев
+    /*@Transactional
+    @Scheduled(fixedRate = 6000) //6 секунд
+    public void cleanReadComments() {
+        log.info("removing read comments from db");
+        userCommentRepository.deleteReadComments();
+    }*/
 }

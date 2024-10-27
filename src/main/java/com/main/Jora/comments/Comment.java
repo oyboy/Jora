@@ -31,6 +31,7 @@ public class Comment implements Serializable {
         return new CommentDTO(
                 this.text,
                 this.user.getUsername(),
+                this.user.getId(),
                 this.createdAt,
                 this.id
         );

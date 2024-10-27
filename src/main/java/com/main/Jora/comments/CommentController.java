@@ -41,6 +41,7 @@ public class CommentController {
         return new CommentDTO(
                 savedComment.getText(),
                 savedComment.getUser().getUsername(),
+                savedComment.getUser().getId(),
                 savedComment.getCreatedAt(),
                 savedComment.getId()
         );
