@@ -102,4 +102,12 @@ tr:nth-child(even) {
     text-decoration: none;
     cursor: pointer;
 }
+.author-comment {
+    background-color: #e0f7fa; /* светлый цвет фона */
+    border: 1px solid #009688; /* цвет рамки */
+    padding: 10px;
+    margin: 5px 0;
+    display: block;
+    width: fit-content;
+}
 

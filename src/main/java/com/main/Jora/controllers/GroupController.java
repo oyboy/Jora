@@ -1,7 +1,6 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
-import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Tag;
 import com.main.Jora.models.User;
