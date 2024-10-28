@@ -35,7 +35,7 @@ $(document).ready(function() {
         });
 
         const commentsSection = $(this).siblings(".commentsSection");
-        commentsSection.toggle();
+        commentsSection.toggle(); //switch visibility
     });
     //Отправка на сервер
     $(".addCommentButton").on("click", function() {
