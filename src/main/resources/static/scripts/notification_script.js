@@ -26,6 +26,8 @@ $(document).ready(function() {
     setInterval(fetchNotifications, 3000);
     // Обработчик клика на колокольчик
     $('#notification-bell').click(function() {
+        $('#notification-list').empty();
+        fetchNotifications();
         $('#notification-dropdown').toggle();
     });
 

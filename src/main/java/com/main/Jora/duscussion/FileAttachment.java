@@ -20,7 +20,15 @@ public class FileAttachment {
     @JoinColumn(name = "discussion_comment_id")
     private DiscussionComment discussionComment;
     private String fileName;
-    private String filePath;
+    @Lob
+    private byte[] bytes;
     private LocalDateTime uploadedAt;
+
+    FileAttachmentDTO convertToDto(String projectHash){
+        return new FileAttachmentDTO(
+                this.fileName,
+                "/projects/" + projectHash + "/api/discussion/download/" + this.id
+        );
+    }
 }
 

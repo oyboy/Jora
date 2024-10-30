@@ -9,7 +9,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 //@Document
@@ -41,7 +44,12 @@ public class DiscussionComment {
                 this.project.getHash(),
                 this.author.getUsername(),
                 this.author.getId(),
-                this.createdAt
+                this.createdAt,
+                Optional.ofNullable(this.attachments)
+                        .orElse(Collections.emptyList()) // Если attachments null, используем пустой список
+                        .stream()
+                        .map(attachment -> attachment.convertToDto(this.project.getHash()))
+                        .collect(Collectors.toList())
         );
     }
 }

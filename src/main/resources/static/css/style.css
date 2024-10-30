@@ -110,4 +110,29 @@ tr:nth-child(even) {
     display: block;
     width: fit-content;
 }
+.attachments {
+    margin-top: 5px;
+}
+
+.file-attachment {
+    margin-left: 10px;
+}
+
+.file-attachment a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.file-attachment a:hover {
+    text-decoration: underline;
+}
+.comment {
+    background-color: #636977; /* светлый цвет фона */
+    border: 1px solid #01342d; /* цвет рамки */
+    color: ghostwhite;
+    padding: 10px;
+    margin: 5px 0;
+    display: block;
+    width: fit-content;
+}
 
