@@ -115,10 +115,28 @@ $(document).ready(function() {
                 },
                 processData: false,
                 contentType: false,
+                beforeSend: function() {
+                    // Показываем прогресс-бар перед отправкой
+                    $('#uploadProgress').show();
+                    $('#progressBar').css('width', '0%'); // Сбрасываем ширину прогрессбара
+                },
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    // Обрабатываем событие прогресса
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            const percentComplete = evt.loaded / evt.total * 100;
+                            $('#progressBar').css('width', percentComplete + '%'); // Обновляем ширину прогрессбара
+                        }
+                    }, false);
+                    return xhr; // Возвращаем XMLHttpRequest
+                },
                 success: function(fileIds) {
+                    $('#uploadProgress').hide(); // Скрываем прогресс-бар после завершения
                     sendCommentWithFiles(text, fileIds);
                 },
                 error: function (error) {
+                    $('#uploadProgress').hide(); // Скрываем прогресс-бар при ошибке
                     alert('Ошибка загрузки файлов. Максимальный размер не должен превышать 10МБ');
                 }
             });
@@ -146,23 +164,40 @@ $(document).ready(function() {
         const fileName = $(this).attr('download'); // Получаем имя файла
 
         // Отправляем GET-запрос на сервер для скачивания
-        fetch(downloadUrl)
-            .then(response => {
-                if (response.ok) {
-                    return response.blob(); // Получаем файл в виде Blob
-                } else {
-                    throw new Error('Файл не найден на сервере');
-                }
-            })
-            .then(blob => {
-                // Создаем ссылку для скачивания
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', downloadUrl, true);
+        xhr.responseType = 'blob'; // Указываем, что ожидаем бинарный ответ
+
+        // Показываем прогресс-бар перед отправкой
+        $('#uploadProgress').show();
+        $('#progressBar').css('width', '0%'); // Сбрасываем ширину прогрессбара
+
+        // Обрабатываем событие прогресса
+        xhr.onprogress = function(event) {
+            if (event.lengthComputable) {
+                const percentComplete = (event.loaded / event.total) * 100;
+                $('#progressBar').css('width', percentComplete + '%'); // Обновляем ширину прогрессбара
+            }
+        };
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const blob = xhr.response; // Получаем файл в виде Blob
                 const downloadLink = document.createElement('a');
                 downloadLink.href = URL.createObjectURL(blob);
                 downloadLink.download = fileName;
                 downloadLink.click(); // Инициируем скачивание
-            })
-            .catch(error => {
-                console.error('Ошибка при скачивании файла:', error);
-            });
+            } else {
+                console.error('Ошибка при скачивании файла:', xhr.statusText);
+            }
+            $('#uploadProgress').hide(); // Скрываем прогресс-бар после завершения
+        };
+
+        xhr.onerror = function() {
+            console.error('Ошибка при загрузке файла');
+            $('#uploadProgress').hide(); // Скрываем прогресс-бар при ошибке
+        };
+
+        xhr.send(); // Отправляем запрос
     });
 });

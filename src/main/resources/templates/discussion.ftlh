@@ -24,17 +24,13 @@
         </form>
     </div>
     <#----------------->
-    <#--Поле с читателями комментария-->
-    <div id="readerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="close-button">&times;</span>
-            <h2>Прочитали:</h2>
-            <div id="readerList"></div>
-        </div>
-    </div>
     <#--Окно для раскрытия изображения-->
     <div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999;">
         <span id="closeModal" style="color:white; font-size:30px; position:absolute; top:10px; right:20px; cursor:pointer;">&times;</span>
         <img id="modalImage"/>
+    </div>
+    <#--Progress-bar-->
+    <div id="uploadProgress" style="display:none;">
+        <div id="progressBar" style="width: 0%; height: 20px; background-color: green;"></div>
     </div>
 </@c.page>
