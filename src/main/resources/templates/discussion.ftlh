@@ -5,6 +5,10 @@
         <div class="error">${errorUserId}</div>
     </#if>
     <div class="commentsSection">
+        <div class="commentsList">
+            <#-- Здесь отображаются комментарии -->
+            <!--Функционал в js-коде -->
+        </div>
         <form id="commentForm" enctype="multipart/form-data">
             <label>
                 <textarea class="newComment" name="comment" placeholder="Добавьте ваш комментарий" required></textarea>
@@ -18,10 +22,6 @@
             <input type="hidden" id="currentUserId" value="${currentUser.id}">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
         </form>
-        <div class="commentsList">
-            <#-- Здесь отображаются комментарии -->
-            <!--Функционал в js-коде -->
-        </div>
     </div>
     <#----------------->
     <#--Поле с читателями комментария-->
@@ -31,5 +31,10 @@
             <h2>Прочитали:</h2>
             <div id="readerList"></div>
         </div>
+    </div>
+    <#--Окно для раскрытия изображения-->
+    <div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999;">
+        <span id="closeModal" style="color:white; font-size:30px; position:absolute; top:10px; right:20px; cursor:pointer;">&times;</span>
+        <img id="modalImage"/>
     </div>
 </@c.page>

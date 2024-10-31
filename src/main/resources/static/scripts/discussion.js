@@ -26,12 +26,27 @@ $(document).ready(function() {
 
             comment.fileAttachmentDTOS.forEach(file => {
                 const fileElement = $('<div class="file-attachment"></div>');
-                const downloadLink = $('<a></a>')
-                    .attr('href', file.downloadUrl)
-                    .attr('download', file.fileName)
-                    .text(file.fileName);
+                // Измените элемент ссылки на изображение, если MIME тип изображения
+                const extensions = ['.jpg', '.png', '.jpeg', '.bmp'];
+                const filePreview = extensions.some(extension => file.fileName.endsWith(extension));
 
-                fileElement.append(downloadLink);
+                if (filePreview) {
+                    const img = $('<img />')
+                        .attr('src', file.downloadUrl)
+                        .attr('alt', file.fileName)
+                        .css({ 'max-width': '200px', 'max-height': '200px', 'cursor': 'pointer' });
+                    img.on('click', function() {
+                        $('#modalImage').attr('src', file.downloadUrl); // Устанавливаем src для модального изображения
+                        $('#imageModal').show(); // Показываем модальное окно
+                    });
+                    filesContainer.append(img);
+                } else {
+                    const downloadLink = $('<a></a>')
+                        .attr('href', file.downloadUrl)
+                        .attr('download', file.fileName)
+                        .text(file.fileName);
+                    fileElement.append(downloadLink);
+                }
                 filesContainer.append(fileElement);
             });
 
@@ -45,6 +60,14 @@ $(document).ready(function() {
 
         $('.commentsList').append(commentElement);
     }
+    // Закрытие модального окна при клике на иконку закрытия
+    $('#closeModal').on('click', function() {
+        $('#imageModal').hide();
+    });
+    $('#imageModal').on('click', function(event) {
+        if(event.target !== this) return; // Закрываем только при клике на фон
+        $(this).hide();
+    });
     loadComments();
 
     //Загрузка комментариев

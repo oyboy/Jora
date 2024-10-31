@@ -109,6 +109,7 @@ tr:nth-child(even) {
     margin: 5px 0;
     display: block;
     width: fit-content;
+    margin-left: auto;
 }
 .attachments {
     margin-top: 5px;
@@ -134,5 +135,14 @@ tr:nth-child(even) {
     margin: 5px 0;
     display: block;
     width: fit-content;
+}
+#imageModal img {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
 }
 
