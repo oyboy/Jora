@@ -3,9 +3,11 @@ package com.main.Jora.configs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
@@ -21,7 +23,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleSQLException(SQLSyntaxErrorException ex) {
-        log.info("SQL Syntax Error: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        log.error("SQL Syntax Error: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         return "redirect:/home";
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException exc) {
+        log.error("Upload size Error: " + exc.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE);
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body("Файл слишком большого размера! Максимальный размер: " + exc.getMaxUploadSize());
     }
 }

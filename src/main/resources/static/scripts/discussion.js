@@ -95,8 +95,8 @@ $(document).ready(function() {
                 success: function(fileIds) {
                     sendCommentWithFiles(text, fileIds);
                 },
-                error: function(error) {
-                    console.error("Ошибка загрузки файлов:", error);
+                error: function (error) {
+                    alert('Ошибка загрузки файлов. Максимальный размер не должен превышать 10МБ');
                 }
             });
         } else {
