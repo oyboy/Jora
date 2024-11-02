@@ -1,5 +1,6 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
+    <script src="/static/scripts/comments_script.js"></script>
     <h1>Task list</h1>
     <a href="/home">К проектам</a>
     <h1>Список задач</h1>
@@ -38,7 +39,7 @@
             <td>Автор</td>
         </tr>
         <#list tasksAndTags as taskTagsDTO>
-            <tr>
+            <tr class="task" data-task-id="${taskTagsDTO.task.id}">
                 <td><h4>${taskTagsDTO.task.id}</h4></td>
                 <td><h2><a href="/projects/${project.hash}/tasks/edit/${taskTagsDTO.task.id}">${taskTagsDTO.task.name}</a></h2></td>
                 <td><p>${taskTagsDTO.task.description}</p></td>
@@ -69,6 +70,37 @@
                     <#else>
                         <p>Нет привязанных пользователей</p>
                     </#list>
+                    <#--Поле с комментариями-->
+                    <button class="showCommentsButton" data-task-id="${taskTagsDTO.task.id}">Комментарии</button>
+                    <div class="commentsSection" data-task-id="${taskTagsDTO.task.id}" style="display: none">
+                        <h3>Комментарии к задаче</h3>
+                        <p><strong> ${taskTagsDTO.task.name}</strong>
+                            Описание задачи: ${taskTagsDTO.task.description}
+                        </p>
+                        <div class="commentsList">
+                            <#-- Здесь отображаются комментарии -->
+                            <!--Функционал в js-коде -->
+                        </div>
+                        <label>
+                            <textarea class="newComment" placeholder="Добавьте ваш комментарий"></textarea>
+                        </label>
+                        <button class="addCommentButton" data-task-id="${taskTagsDTO.task.id}">Добавить комментарий</button>
+                        <input type="hidden" id="projectHash" value="${project.hash}">
+                        <input type="hidden" id="currentUsername" value="${currentUser.username}">
+                        <input type="hidden" id="currentUserId" value="${currentUser.id}">
+                        <input type="hidden" id="taskId" value="${taskTagsDTO.task.id}">
+                        <input type="hidden" name="_csrf" value="${_csrf.token}">
+                    </div>
+                    <#----------------->
+                    <#--Поле с читателями комментария-->
+                    <div id="readerModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-button" id="close-button">&times;</span>
+                            <h2>Прочитали:</h2>
+                            <div id="readerList"></div>
+                        </div>
+                    </div>
+                    <#----------------->
                 </td>
             </tr>
         <#else>

@@ -36,6 +36,7 @@
         <i>${project.createdAt?date}</i>
         <a href="/projects/${project.hash}/tasks">Go to tasks</a>
         <a href="/projects/${project.hash}/group">To group</a>
+        <a href="/projects/${project.hash}/discussion">To discussion</a>
     </div>
     <#else>
     <h2>У вас ещё нет проектов. <a href="/home/create">Создать?</a></h2>

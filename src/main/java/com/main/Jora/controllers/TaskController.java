@@ -65,7 +65,10 @@ public class TaskController {
         Long project_id = projectRepository.findIdByHash(project_hash);
         return userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project_id);
     }
-
+    @ModelAttribute("currentUser")
+    public User getCurrentUser(@AuthenticationPrincipal User user){
+        return user;
+    }
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
@@ -169,7 +172,7 @@ public class TaskController {
                              @PathVariable("project_hash") String project_hash,
                              Model model){
         try{
-            taskService.addUserToTask(taskService.getTaskById(task_id), project_hash, user);
+            taskService.addUserToTask(taskService.getTaskById(task_id), user);
         } catch (CustomException.UserAlreadyJoinedException ex){
             Task task = taskService.getTaskById(task_id);
             model.addAttribute("task", task);

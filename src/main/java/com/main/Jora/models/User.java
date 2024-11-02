@@ -1,5 +1,6 @@
 package com.main.Jora.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.main.Jora.notifications.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -58,10 +59,11 @@ public class User implements UserDetails {
     private List<Tag> tags = new ArrayList<>();
 
     //Связь с уведомлениями
-    @EqualsAndHashCode.Exclude
+/*    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Notification> notifications = new HashSet<>();
+    @JsonManagedReference
+    private Set<Notification> notifications = new HashSet<>();*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

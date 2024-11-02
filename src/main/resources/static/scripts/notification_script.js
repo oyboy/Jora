@@ -19,13 +19,16 @@ $(document).ready(function() {
                 $('#notification-count').hide();
             }
         });
-    }
-
+    }//Очистка и обновления списка
+    setInterval(function() {
+        $('#notification-list').empty();
+    }, 3000);
+    setInterval(fetchNotifications, 3000);
     // Обработчик клика на колокольчик
     $('#notification-bell').click(function() {
+        $('#notification-list').empty();
+        fetchNotifications();
         $('#notification-dropdown').toggle();
-        $('#notification-list').empty(); // Очистить список перед заполнением
-        fetchNotifications(); // Получить уведомления
     });
 
     // Обработчик клика на уведомление для пометки как прочитанное
