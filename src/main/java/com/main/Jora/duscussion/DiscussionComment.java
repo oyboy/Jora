@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -15,40 +16,30 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
-//@Document
-@Entity
+@Document
 @ToString
 @EqualsAndHashCode
 public class DiscussionComment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private User author;
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Project project;
+    private String id;
+    private Long authorId;
+    private String authorName;
+    private String projectHash;
     private String text;
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "discussionComment", cascade = CascadeType.ALL)
     private List<FileAttachment> attachments;
 
     DiscussionCommentDTO convertToDto(){
         return new DiscussionCommentDTO(
                 this.text,
-                this.project.getHash(),
-                this.author.getUsername(),
-                this.author.getId(),
+                this.projectHash,
+                this.authorName,
+                this.authorId,
                 this.createdAt,
                 Optional.ofNullable(this.attachments)
                         .orElse(Collections.emptyList()) // Если attachments null, используем пустой список
                         .stream()
-                        .map(attachment -> attachment.convertToDto(this.project.getHash()))
+                        .map(attachment -> attachment.convertToDto(this.projectHash))
                         .collect(Collectors.toList())
         );
     }

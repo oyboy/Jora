@@ -1,14 +1,13 @@
 package com.main.Jora.duscussion;
 
-import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
 import com.main.Jora.repositories.ProjectRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,24 +17,25 @@ import java.util.List;
 @Transactional
 public class DiscussionService {
     @Autowired
+    private GridFsTemplate gridFsTemplate;
+    @Autowired
     DiscussionRepository discussionRepository;
     @Autowired
     ProjectRepository projectRepository;
     @Autowired
     FileAttachmentRepository fileAttachmentRepository;
     public DiscussionComment saveDiscussionComment(DiscussionCommentCreatorDTO createCommentDTO, User user){
-        Project project = projectRepository.findProjectByHash(createCommentDTO.getProjectHash());
-
         DiscussionComment comment = new DiscussionComment();
-        comment.setAuthor(user);
+        comment.setAuthorId(user.getId());
+        comment.setAuthorName(user.getUsername());
         comment.setText(createCommentDTO.getText());
-        comment.setProject(project);
+        comment.setProjectHash(createCommentDTO.getProjectHash());
         comment.setCreatedAt(LocalDateTime.now());
 
         if (createCommentDTO.getAttachmentIds() != null) {
-            List<FileAttachment> attachments = (List<FileAttachment>) fileAttachmentRepository.findAllById(createCommentDTO.getAttachmentIds());
+            List<FileAttachment> attachments = fileAttachmentRepository.findAllById(createCommentDTO.getAttachmentIds());
             for (FileAttachment attachment : attachments) {
-                attachment.setDiscussionComment(comment);
+                attachment.setDiscussionCommentId(comment.getId());
             }
             comment.setAttachments(attachments);
         }
@@ -54,10 +54,9 @@ public class DiscussionService {
         return fileAttachment;
     }
     public List<DiscussionComment> getComments(String project_hash){
-        Project project = projectRepository.findProjectByHash(project_hash);
-        return discussionRepository.getDiscussionCommentsByProjectId(project.getId());
+        return discussionRepository.getDiscussionCommentsByProjectHash(project_hash);
     }
-    public FileAttachment findFileByFileId(Long id){
+    public FileAttachment findFileByFileId(String id){
         log.info("Поиск файла по id: {}", id);
         return fileAttachmentRepository.findById(id).orElse(null);
     }

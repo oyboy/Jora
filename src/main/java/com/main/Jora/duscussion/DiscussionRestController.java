@@ -49,12 +49,12 @@ public class DiscussionRestController {
         }
         DiscussionComment discussionComment = discussionService.saveDiscussionComment(createCommentDTO, currentUser);
 
-        String hash = discussionComment.getProject().getHash();
+        String hash = createCommentDTO.getProjectHash();
         return new DiscussionCommentDTO(
                 discussionComment.getText(),
                 hash,
-                discussionComment.getAuthor().getUsername(),
-                discussionComment.getAuthor().getId(),
+                currentUser.getUsername(),
+                currentUser.getId(),
                 discussionComment.getCreatedAt(),
                 Optional.ofNullable(discussionComment.getAttachments())
                         .orElse(Collections.emptyList()) // Если attachments null, используем пустой список
@@ -64,8 +64,8 @@ public class DiscussionRestController {
         );
     }
     @PostMapping("/upload-files")
-    public ResponseEntity<List<Long>> uploadFiles(@RequestParam("files") List<MultipartFile> files) {
-        List<Long> fileIds = new ArrayList<>();
+    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") List<MultipartFile> files) {
+        List<String> fileIds = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
@@ -88,7 +88,7 @@ public class DiscussionRestController {
         return ResponseEntity.ok(commentDTOS);
     }
     @GetMapping("/download/{fileId}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable("fileId") Long fileId) {
+    public ResponseEntity<byte[]> downloadFile(@PathVariable("fileId") String fileId) {
         FileAttachment fileAttachment = discussionService.findFileByFileId(fileId);
         //ava.lang.IllegalArgumentException: The Unicode character [Г] at code point [1,043] cannot be encoded as it i
         String encodedFileName = URLEncoder.encode(fileAttachment.getFileName(), StandardCharsets.UTF_8);

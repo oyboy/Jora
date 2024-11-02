@@ -8,5 +8,5 @@ import java.util.List;
 public class DiscussionCommentCreatorDTO {
     private String text;
     private String projectHash;
-    private List<Long> attachmentIds;
+    private List<String> attachmentIds;
 }
