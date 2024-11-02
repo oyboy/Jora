@@ -1,14 +1,10 @@
 package com.main.Jora.duscussion;
 
-import com.main.Jora.models.Project;
-
-import com.main.Jora.models.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +24,6 @@ public class DiscussionComment {
     private String text;
     private LocalDateTime createdAt;
     private List<FileAttachment> attachments;
-
     DiscussionCommentDTO convertToDto(){
         return new DiscussionCommentDTO(
                 this.text,

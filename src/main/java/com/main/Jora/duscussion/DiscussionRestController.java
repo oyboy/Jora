@@ -14,7 +14,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -69,8 +68,7 @@ public class DiscussionRestController {
 
         for (MultipartFile file : files) {
             try {
-                FileAttachment fileAttachment = discussionService.saveFileAttachment(file);
-                fileIds.add(fileAttachment.getId());
+                fileIds.add(discussionService.saveFileAttachment(file));
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
@@ -91,6 +89,7 @@ public class DiscussionRestController {
     public ResponseEntity<byte[]> downloadFile(@PathVariable("fileId") String fileId) {
         FileAttachment fileAttachment = discussionService.findFileByFileId(fileId);
         //ava.lang.IllegalArgumentException: The Unicode character [Г] at code point [1,043] cannot be encoded as it i
+        if (fileAttachment == null) return ResponseEntity.badRequest().body("File deleted".getBytes());
         String encodedFileName = URLEncoder.encode(fileAttachment.getFileName(), StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
