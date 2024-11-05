@@ -1,13 +1,22 @@
 package com.main.Jora.services;
 
-import com.main.Jora.enums.Role;
+import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.User;
+import com.main.Jora.models.UserAvatar;
+import com.main.Jora.repositories.UserAvatarRepository;
 import com.main.Jora.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 @Service
 @Slf4j
 public class UserService {
@@ -15,6 +24,9 @@ public class UserService {
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    UserAvatarRepository userAvatarRepository;
+
     public boolean createUser(User user){
         String email = user.getEmail();
         if (userRepository.findByEmail(email) != null) return false;
@@ -23,5 +35,77 @@ public class UserService {
         log.info("Saving new user {}", user);
         userRepository.save(user);
         return true;
+    }
+    public void editUser(Long user_id, User form)
+            throws CustomException.ObjectExistsException{
+        log.warn("Got user form: {}", form);
+        User user = userRepository.findById(user_id).orElse(null);
+        if (user == null) return;
+
+        //if email edited
+        if (!form.getEmail().equals(user.getEmail())){
+            if (userRepository.findByEmail(form.getEmail()) != null)
+                throw new CustomException.ObjectExistsException("");
+            user.setEmail(form.getEmail());
+        }
+        user.setUsername(form.getUsername());
+
+        //password change
+        if (form.getPassword() != null){
+            if (!form.getPassword().equals(form.getConfirmPassword())){
+                throw new IllegalArgumentException("Confirmation password is incorrect");
+            }
+            user.setPassword(passwordEncoder.encode(form.getPassword()));
+        }
+        log.info("Updating user {}", user);
+        userRepository.save(user);
+    }
+    public User getUserById(Long user_id){
+        return userRepository.findById(user_id).orElse(null);
+    }
+    public void setAvatar(MultipartFile file, Long user_id) throws IOException{
+        log.info("Image compressing: {}", file.getOriginalFilename());
+        InputStream inputStream = file.getInputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Thumbnails.of(inputStream)
+                .scale(1) // Масштаб 1: оригинальный размер
+                .outputQuality(0.5) // Качество сжатия до 50%
+                .toOutputStream(os);
+
+        //Если добавлять дефолтный аватар через js, то придётся тут кое-что переделать
+        UserAvatar userAvatar = findAvatarByUserId(user_id);
+        userAvatar.setBytes(os.toByteArray());
+
+        log.info("Saving avatar for user: {}", userAvatar.getUserId());
+        userAvatarRepository.save(userAvatar);
+    }
+    public void deleteAvatarForUser(Long user_id){
+        UserAvatar userAvatar = findAvatarByUserId(user_id);
+        log.info("Deleting avatar for user: {}", userAvatar.getUserId());
+        userAvatarRepository.delete(userAvatar);
+    }
+    public UserAvatar findAvatarByUserId(Long user_id){
+        UserAvatar userAvatar = userAvatarRepository.findByUserId(user_id);
+        if (userAvatar == null)
+            try{
+                return setDefaultAvatar(user_id);
+            } catch (IOException e){
+                log.error("Can't set default avatar: {}", e.getMessage());
+                return null;
+        }
+        return userAvatar;
+    }
+    private UserAvatar setDefaultAvatar(Long user_id) throws IOException {
+        Path path = Paths.get("src/main/resources/static/images/default_avatar.jpg");
+        byte[] avatarBytes = Files.readAllBytes(path);
+
+        UserAvatar userAvatar = new UserAvatar();
+        userAvatar.setBytes(avatarBytes);
+        userAvatar.setUserId(user_id);
+
+        log.info("Saving default avatar for user: {}", userAvatar.getUserId());
+        userAvatarRepository.save(userAvatar);
+
+        return userAvatar;
     }
 }

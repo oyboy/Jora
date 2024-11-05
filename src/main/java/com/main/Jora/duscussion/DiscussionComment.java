@@ -19,22 +19,22 @@ public class DiscussionComment {
     @Id
     private String id;
     private Long authorId;
-    private String authorName;
     private String projectHash;
     private String text;
     private LocalDateTime createdAt;
     private List<FileAttachment> attachments;
-    DiscussionCommentDTO convertToDto(){
+
+    DiscussionCommentDTO convertToDto(String hash, DiscussionUserDTO userDto){
         return new DiscussionCommentDTO(
                 this.text,
-                this.projectHash,
-                this.authorName,
+                hash,
                 this.authorId,
+                userDto,
                 this.createdAt,
                 Optional.ofNullable(this.attachments)
                         .orElse(Collections.emptyList()) // Если attachments null, используем пустой список
                         .stream()
-                        .map(attachment -> attachment.convertToDto(this.projectHash))
+                        .map(attachment -> attachment.convertToDto(hash))
                         .collect(Collectors.toList())
         );
     }

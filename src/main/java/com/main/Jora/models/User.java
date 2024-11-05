@@ -58,13 +58,6 @@ public class User implements UserDetails {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    //Связь с уведомлениями
-/*    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Notification> notifications = new HashSet<>();*/
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userProjectRoles.stream()

@@ -3,7 +3,8 @@
 <@c.page>
     <div style="text-align: right">
     <#if user?? && user.email??>
-        <h4>Имя пользователя:<i>${user.username}</i></h4>
+        <img src="/home/user/${user.id}/avatar" class="avatar" style="width: 50px; height:50px"/>
+        <h4>Имя пользователя:<a href="/home/user/${user.id}"><i>${user.username}</i></a></h4>
         <h4>Почта пользователя: <i>${user.email}</i></h4>
         <form action="/logout" method="post">
             <input type="hidden" name="_csrf" value="${_csrf.token}">

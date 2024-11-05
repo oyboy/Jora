@@ -26,17 +26,10 @@ public class DiscussionService {
     @Autowired
     private GridFsTemplate gridFsTemplate;
     @Autowired
-    GridFsOperations operations;
-    @Autowired
     DiscussionRepository discussionRepository;
-    @Autowired
-    ProjectRepository projectRepository;
-    @Autowired
-    FileAttachmentRepository fileAttachmentRepository;
     public DiscussionComment saveDiscussionComment(DiscussionCommentCreatorDTO createCommentDTO, User user){
         DiscussionComment comment = new DiscussionComment();
         comment.setAuthorId(user.getId());
-        comment.setAuthorName(user.getUsername());
         comment.setText(createCommentDTO.getText());
         comment.setProjectHash(createCommentDTO.getProjectHash());
         comment.setCreatedAt(LocalDateTime.now());

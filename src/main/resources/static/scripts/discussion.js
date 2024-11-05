@@ -16,7 +16,7 @@ $(document).ready(function() {
     function addCommentToList(comment) {
         const commentElement = $('<div class="comment"></div>')
             .text(comment.text)
-            .append(` - ${comment.authorName}`)
+            .append(` - ${comment.userDTO.username}`)
             .append(` <span class="timestamp">${comment.createdAt}</span><br>`);
 
         console.log("Attacms: " + comment.fileAttachmentDTOS);

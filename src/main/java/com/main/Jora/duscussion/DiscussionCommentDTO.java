@@ -10,8 +10,8 @@ import java.util.List;
 public class DiscussionCommentDTO {
     private String text;
     private String project_hash;
-    private String authorName;
     private Long authorId;
+    private DiscussionUserDTO userDTO;
     private LocalDateTime createdAt;
     private List<FileAttachmentDTO> fileAttachmentDTOS;
 }

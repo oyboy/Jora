@@ -4,6 +4,7 @@ import com.main.Jora.configs.CustomException;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
 import com.main.Jora.services.ProjectService;
+import com.main.Jora.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,12 +22,16 @@ import java.util.List;
 public class HomeController {
     @Autowired
     ProjectService projectService;
+    @Autowired
+    private UserService userService;
+
     //Данные о текущем пользователе
     @ModelAttribute(name = "user")
     public User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            return (User) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            //Теперь создаётся запрос к базе для получения актуальных даннных
+            return userService.getUserById(user.getId());
         }
         return new User();
     }
