@@ -1,5 +1,6 @@
 package com.main.Jora.duscussion;
 
+import com.main.Jora.models.dto.UserAvatarDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,7 +25,7 @@ public class DiscussionComment {
     private LocalDateTime createdAt;
     private List<FileAttachment> attachments;
 
-    DiscussionCommentDTO convertToDto(String hash, DiscussionUserDTO userDto){
+    DiscussionCommentDTO convertToDto(String hash, UserAvatarDTO userDto){
         return new DiscussionCommentDTO(
                 this.text,
                 hash,

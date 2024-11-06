@@ -3,6 +3,7 @@ package com.main.Jora.duscussion;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main.Jora.models.User;
+import com.main.Jora.models.dto.UserAvatarDTO;
 import com.main.Jora.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,9 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -54,7 +53,7 @@ public class DiscussionRestController {
 
         String hash = createCommentDTO.getProjectHash();
         return discussionComment.convertToDto(hash,
-                new DiscussionUserDTO(currentUser.getUsername()));
+                new UserAvatarDTO(currentUser.getId(), currentUser.getUsername()));
     }
 
     @PostMapping("/upload-files")
@@ -77,7 +76,8 @@ public class DiscussionRestController {
                 .stream()
                 //Oh, jesus
                 .map(attachment -> attachment.convertToDto(project_hash,
-                        new DiscussionUserDTO(userService.getUserById(attachment.getAuthorId()).getUsername())))
+                        new UserAvatarDTO(attachment.getAuthorId(),
+                                userService.getUserById(attachment.getAuthorId()).getUsername())))
                 .collect(Collectors.toList());
         System.out.println("Found " + commentDTOS.size() + " comments in project " + project_hash);
         return ResponseEntity.ok(commentDTOS);

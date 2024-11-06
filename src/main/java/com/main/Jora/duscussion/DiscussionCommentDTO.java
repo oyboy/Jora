@@ -1,5 +1,6 @@
 package com.main.Jora.duscussion;
 
+import com.main.Jora.models.dto.UserAvatarDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class DiscussionCommentDTO {
     private String text;
     private String project_hash;
     private Long authorId;
-    private DiscussionUserDTO userDTO;
+    private UserAvatarDTO userDTO;
     private LocalDateTime createdAt;
     private List<FileAttachmentDTO> fileAttachmentDTOS;
 }

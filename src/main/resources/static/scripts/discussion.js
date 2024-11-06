@@ -17,9 +17,10 @@ $(document).ready(function() {
         const commentElement = $('<div class="comment"></div>')
             .text(comment.text)
             .append(` - ${comment.userDTO.username}`)
-            .append(` <span class="timestamp">${comment.createdAt}</span><br>`);
-
-        console.log("Attacms: " + comment.fileAttachmentDTOS);
+            .append(` <span class="timestamp">${comment.createdAt}</span><br>`)
+            .append(`<img src="/home/user/${comment.userDTO.userId}/avatar" class="avatar"
+                                 style="width: 50px; height: 50px;" />
+           `);
         // Проверяем, если у комментария есть файлы
         if (comment.fileAttachmentDTOS && comment.fileAttachmentDTOS.length > 0) {
             const filesContainer = $('<div class="attachments"></div>');

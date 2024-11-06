@@ -80,7 +80,16 @@ tr:nth-child(even) {
     overflow: auto; /* Прокрутка, если необходимо */
     background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
 }
-
+.modal-header {
+    padding: 2px 16px;
+    background-color: #dfce9e;
+    text-align: center;
+    color: white;
+}
+.modal-title{
+    font-size: 24px;
+    font-weight: bold;
+}
 .modal-content {
     background-color: #fefefe; /* Цвет фона модального окна */
     margin: 15% auto; /* Центрирование окна */
@@ -88,7 +97,12 @@ tr:nth-child(even) {
     border: 1px solid #888;
     width: 80%; /* Ширина окна */
 }
-
+.modal-footer {
+    padding: 2px 16px;
+    text-align: center;
+    background-color: #dfce9e;
+    color: white;
+}
 .close-button {
     color: #aaa;
     float: right;
@@ -102,14 +116,35 @@ tr:nth-child(even) {
     text-decoration: none;
     cursor: pointer;
 }
+.comment {
+    background-color: #636977; /* светлый цвет фона */
+    border: 1px solid #01342d; /* цвет рамки */
+    color: ghostwhite;
+    padding: 10px;
+    margin: 5px 0;
+    display: flex;
+    width: fit-content;
+}
 .author-comment {
     background-color: #e0f7fa; /* светлый цвет фона */
     border: 1px solid #009688; /* цвет рамки */
     padding: 10px;
     margin: 5px 0;
-    display: block;
+    display: flex;
     width: fit-content;
     margin-left: auto;
+}
+.author-comment .avatar {
+    float: right;
+}
+.comment .avatar{
+    float: left;
+}
+.avatar{
+    vertical-align: middle;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
 }
 .attachments {
     margin-top: 5px;
@@ -127,15 +162,6 @@ tr:nth-child(even) {
 .file-attachment a:hover {
     text-decoration: underline;
 }
-.comment {
-    background-color: #636977; /* светлый цвет фона */
-    border: 1px solid #01342d; /* цвет рамки */
-    color: ghostwhite;
-    padding: 10px;
-    margin: 5px 0;
-    display: block;
-    width: fit-content;
-}
 #imageModal img {
     margin: 0;
     position: absolute;
@@ -144,10 +170,4 @@ tr:nth-child(even) {
     transform: translate(-50%, -50%);
     max-width: 90%;
     max-height: 90%;
-}
-.avatar{
-    vertical-align: middle;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
 }

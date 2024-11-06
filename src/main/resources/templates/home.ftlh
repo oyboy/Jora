@@ -15,6 +15,7 @@
     </#if>
         <#include "parts/notification.ftlh">
     </div>
+    <h2><a href="/home/calendar">Календарь</a></h2>
 
     <form action="/home/join" method="post">
         <label for="project_hash">Ссылка: </label>

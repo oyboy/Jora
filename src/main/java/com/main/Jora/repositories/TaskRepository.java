@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findTasksByProjectId(Long id);
-
-    Task findTaskById(Long id);
-
     List<Task> findByProjectIdAndDeadlineBetween(Long projectId, LocalDateTime start, LocalDateTime end);
     List<Task> findByProjectIdAndDeadlineIsNull(Long projectId);
 
@@ -27,6 +24,12 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
             "JOIN UserTask ut " +
             "ON t.id = ut.task.id " +
             "WHERE ut.user.id = :userId AND t.project.id = :projectId")
-    List<Task> findTaskByUserAndProject(@Param("userId") Long userId,
+    List<Task> findTasksByUserAndProject(@Param("userId") Long userId,
                                                @Param("projectId") Long projectId);
+    @Query("SELECT t " +
+            "FROM Task t " +
+            "JOIN UserTask ut " +
+            "ON t.id = ut.task.id " +
+            "WHERE ut.user.id = :userId")
+    List<Task> findAllTasksByUserId(@Param("userId") Long userId);
 }

@@ -1,5 +1,6 @@
 package com.main.Jora.services;
 
+import com.main.Jora.calendar.CalendarTaskDTO;
 import com.main.Jora.configs.CustomException;
 import com.main.Jora.enums.Status;
 import com.main.Jora.models.*;
@@ -169,7 +170,7 @@ public class TaskService {
     }
     // Оценка по загруженности
     private int calculateLoadScore(User user, Long project_id){
-        List<Task> tasks = taskRepository.findTaskByUserAndProject(user.getId(), project_id);
+        List<Task> tasks = taskRepository.findTasksByUserAndProject(user.getId(), project_id);
         if (tasks.isEmpty()) {
             return 0; // Если нет задач, коэффициент загруженности равен 0
         }
@@ -182,5 +183,17 @@ public class TaskService {
                         task.getDeadline().isBefore(LocalDateTime.now()) &&
                         task.getStatus() != Status.DONE).count();
         return overdueTasks + takedTasks;
+    }
+    //Получить все задачи для пользователя (для календаря)
+    public List<Task> getAllTasksForUser(Long userId){
+        log.info("Searching event-tasks for user {}", userId);
+        return taskRepository.findAllTasksByUserId(userId);
+    }
+    public void changeDate(CalendarTaskDTO calendarTaskDTO){
+        Task task = taskRepository.findById(calendarTaskDTO.getTaskId()).orElse(null);
+        log.info("Changing date: {}", calendarTaskDTO);
+        task.setCreatedAt(calendarTaskDTO.getCreatedAt());
+        task.setDeadline(calendarTaskDTO.getDeadline());
+        taskRepository.save(task);
     }
 }

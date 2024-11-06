@@ -1,5 +1,6 @@
 package com.main.Jora.models;
 
+import com.main.Jora.calendar.CalendarTaskDTO;
 import com.main.Jora.enums.Priority;
 import com.main.Jora.enums.Status;
 import jakarta.persistence.*;
@@ -66,5 +67,16 @@ public class Task {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 '}';
+    }
+    public CalendarTaskDTO convertToCalendarTask() {
+        return new CalendarTaskDTO(
+                this.id,
+                this.name,
+                this.description,
+                this.priority,
+                this.status,
+                this.createdAt,
+                this.deadline
+        );
     }
 }
