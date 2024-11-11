@@ -30,7 +30,6 @@ public class HomeController {
     public User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof User user) {
-            //Теперь создаётся запрос к базе для получения актуальных даннных
             return userService.getUserById(user.getId());
         }
         return new User();
@@ -75,8 +74,10 @@ public class HomeController {
         } catch (CustomException.UserBannedException ex){
             model.addAttribute("userError", "Вы забанены");
             return "home";
+        } catch (CustomException.ObjectExistsException ex){
+            model.addAttribute("userError", "Проект с таким хэшем не найден");
+            return "home";
         }
-
         return "redirect:/projects/" + project_hash + "/group";
     }
 }

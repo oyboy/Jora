@@ -10,28 +10,30 @@
     font-size: 14px;
     border: 1px;
 }
-/*Стиль таблицы*/
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
-
-/*Уведомления*/
-.notification-container {
-    position: relative;
-}
+/*Колокольчик*/
 .bell {
     cursor: pointer;
     font-size: 24px;
+}
+.dropdown-menu {
+    width: 300px;
+    overflow: visible;
+}
+.dropdown-item {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    padding: 10px;
+    min-height: 50px;
+}
+.dropdown-item a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+.dropdown-item a:hover {
+    text-decoration: underline;
 }
 .notification-count {
     position: absolute;
@@ -42,27 +44,27 @@ tr:nth-child(even) {
     border-radius: 50%;
     padding: 2px 5px;
 }
-.dropdown {
-    position: absolute;
-    top: 30px; /* корректируйте по мере необходимости */
-    right: 0;
-    background: white;
-    border: 1px solid #ccc;
-    width: 300px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-.dropdown ul {
-    list-style: none;
-    padding: 0;
-}
-.dropdown li {
+/*Kanban*/
+.task-card {
+    margin: 0;
     padding: 10px;
-    border-bottom: 1px solid #ccc;
+    cursor: grab;
 }
-.dropdown li:hover {
-    background-color: #f0f0f0;
+.task-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
 }
+.kanban-column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 /*Непрочитанные комментарии*/
 .new-comment {
     background-color: white;
@@ -70,15 +72,15 @@ tr:nth-child(even) {
     border: 2px solid #008CBA;
 }
 .modal {
-    display: none; /* Скрыто по умолчанию */
-    position: fixed; /* Окно фиксированного позиционирования */
-    z-index: 1000; /* Отображение поверх других элементов */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
-    width: 100%; /* Полная ширина */
-    height: 100%; /* Полная высота */
-    overflow: auto; /* Прокрутка, если необходимо */
-    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 .modal-header {
     padding: 2px 16px;
@@ -91,11 +93,11 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 .modal-content {
-    background-color: #fefefe; /* Цвет фона модального окна */
-    margin: 15% auto; /* Центрирование окна */
+    background-color: #fefefe;
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Ширина окна */
+    width: 80%;
 }
 .modal-footer {
     padding: 2px 16px;
@@ -103,48 +105,33 @@ tr:nth-child(even) {
     background-color: #dfce9e;
     color: white;
 }
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+/*Обсуждения*/
+.comment, .author-comment {
+    border-radius: 0.25rem;
+    padding: 10px;
+    margin: 5px 0;
 }
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+.commentsList {
+    display: flex;
+    flex-direction: column;
 }
 .comment {
-    background-color: #636977; /* светлый цвет фона */
-    border: 1px solid #01342d; /* цвет рамки */
+    background-color: #636977;
+    border: 1px solid #01342d;
     color: ghostwhite;
-    padding: 10px;
-    margin: 5px 0;
-    display: flex;
-    width: fit-content;
+    align-self: flex-start;
 }
 .author-comment {
-    background-color: #e0f7fa; /* светлый цвет фона */
-    border: 1px solid #009688; /* цвет рамки */
-    padding: 10px;
-    margin: 5px 0;
-    display: flex;
-    width: fit-content;
+    background-color: #e0f7fa;
+    border: 1px solid #009688;
     margin-left: auto;
+    align-self: flex-end;
 }
-.author-comment .avatar {
-    float: right;
-}
-.comment .avatar{
-    float: left;
-}
-.avatar{
-    vertical-align: middle;
+.avatar {
     width: 150px;
     height: 150px;
     border-radius: 50%;
+    vertical-align: middle;
 }
 .attachments {
     margin-top: 5px;
@@ -158,9 +145,10 @@ tr:nth-child(even) {
     color: #007bff;
     text-decoration: none;
 }
-
-.file-attachment a:hover {
-    text-decoration: underline;
+textarea.form-control {
+    width: 100%;
+    min-height: 50px;
+    overflow: hidden;
 }
 #imageModal img {
     margin: 0;
@@ -170,4 +158,14 @@ tr:nth-child(even) {
     transform: translate(-50%, -50%);
     max-width: 90%;
     max-height: 90%;
+}
+/*Bootstrap*/
+.form-group {
+    margin-top: 10px;
+}
+.alert {
+    margin-top: 10px;
+}
+.btn-primary {
+    margin: 10px 0;
 }

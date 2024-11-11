@@ -22,8 +22,7 @@ import java.util.Set;
 public class UserController {
     @Autowired
     UserService userService;
-
-    @ModelAttribute(name="currentUser")
+    @ModelAttribute(name="user")
     public User currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof User user) {
@@ -39,14 +38,24 @@ public class UserController {
     public String editUser(@PathVariable Long user_id,
                            @Valid User user,
                            Errors errors,
-                           Model model){
+                           Model model,
+                           @RequestParam(value = "editPassword", required = false) Boolean editPassword){
         if (errors.hasErrors()){
             errors.getAllErrors().forEach(error -> System.out.println("Error in user_controller: " + error));
             model.addAttribute("errors", errors);
             return "user-edit";
         }
+        /*Клонирование объекта*/
+        User userForm = new User();
+        userForm.setUsername(user.getUsername());
+        userForm.setPassword(user.getPassword());
+        userForm.setConfirmPassword(user.getConfirmPassword());
+        userForm.setEmail(user.getEmail());
+        if (editPassword == null || !editPassword) {
+            userForm.setPassword(null);
+        }
         try{
-            userService.editUser(user_id, user);
+            userService.editUser(user_id, userForm);
         } catch (IllegalArgumentException e){
             errors.rejectValue("confirmPassword", "error.user", "Пароли не совпадают");
             model.addAttribute("errors", errors);

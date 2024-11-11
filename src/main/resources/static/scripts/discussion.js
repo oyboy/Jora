@@ -12,15 +12,34 @@ $(document).ready(function() {
             addCommentToList(comment);
         });
     });
+
+    const textarea = $('textarea[name="comment"]');
+    function autoResizeTextarea() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    }
+    textarea.on('input', autoResizeTextarea);
+
     // Функция для добавления комментария в список
     function addCommentToList(comment) {
-        const commentElement = $('<div class="comment"></div>')
-            .text(comment.text)
-            .append(` - ${comment.userDTO.username}`)
-            .append(` <span class="timestamp">${comment.createdAt}</span><br>`)
-            .append(`<img src="/home/user/${comment.userDTO.userId}/avatar" class="avatar"
-                                 style="width: 50px; height: 50px;" />
-           `);
+        const commentElement = $('<div class="comment"></div>');
+        if (comment.authorId !== currentUserId) { //Тут опять пошаманить
+            commentElement
+                .append(`<strong>${comment.userDTO.username}</strong>`)
+                .append(` <span class="timestamp">${comment.createdAt}</span><br>`)
+                .append(`
+                <p>
+                    ${comment.text.replace(/\n/g, '<br>')}
+                </p>`)
+                .append(`<img src="/home/user/${comment.userDTO.userId}/avatar" class="avatar"
+                                 style="width: 50px; height: 50px;" />`);
+        }else{
+            commentElement.append(`
+                <p>
+                    ${comment.text.replace(/\n/g, '<br>')}
+                </p>`
+            );
+        }
         // Проверяем, если у комментария есть файлы
         if (comment.fileAttachmentDTOS && comment.fileAttachmentDTOS.length > 0) {
             const filesContainer = $('<div class="attachments"></div>');
@@ -87,11 +106,20 @@ $(document).ready(function() {
             }
         });
     }
+    //primitive filter from xss
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
     //Отправка по сокету
     $(".addCommentButton").on("click", function(event) {
         event.preventDefault();
 
-        const text = $('.newComment').val();
+        const text = escapeHtml($('.newComment').val());
         const files = $('#fileUpload')[0].files;
         const projectHash = $('#projectHash').val();
 

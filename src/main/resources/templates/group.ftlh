@@ -1,78 +1,93 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
-    <a href="/home">to projects</a>
-    <h2>Welcome to group</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Управление группой</h2>
     <#if currentUserRole.role?string == "ROLE_LEADER">
-        <form action="/projects/${project_hash}/group/ban" method="post">
-            <label for="email">
-                Email: <input type="text" name="email">
-            </label>
-            <br>
+        <form action="/projects/${project_hash}/group/ban" method="post" class="mb-4">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" class="form-control" name="email" id="email" placeholder="Введите email">
+            </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <button type="submit">Забанить / разбанить</button>
+            <button type="submit" class="btn btn-danger mt-2">Забанить / разбанить</button>
         </form>
     </#if>
+
     <#if emailNotFound??>
-        <div class="error">${emailNotFound}</div>
+        <div class="alert alert-danger">${emailNotFound}</div>
     </#if>
     <#if suicideError??>
-        <div class="error">${suicideError}</div>
+        <div class="alert alert-danger">${suicideError}</div>
     </#if>
 
-        <h4>Создать новый тег</h4>
-        <form action="/projects/${project_hash}/group/tag-add" method="post">
-            <label for="tagName">
-                Название тега: <input type="text" name="tagName">
-            </label>
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <button type="submit">Создать</button>
-        </form>
-        <#if sizeException??>
-            <div class="error">${sizeException}</div>
-        </#if>
-        <#if existsException??>
-            <div class="error">${existsException}</div>
-        </#if>
-    <br>
-
-    <h4>Назначить тег</h4>
-    <form action="/projects/${project_hash}/group/tag-set" method="post">
-        <label for="tagName">Название тега: </label>
-        <select name="tagName" id="tagName">
-            <#list tagsForProject as tag>
-                <option value="${tag.name}">${tag.name}</option>
-            </#list>
-        </select>
-        <label for="email">Пользователь: </label>
-        <select name="email" id="email">
-            <#list usersAndTags as userAndTag>
-                <option value="${userAndTag.user.email}">${userAndTag.user.email}</option>
-            </#list>
-        </select>
+    <h4>Создать новый тег</h4>
+    <form action="/projects/${project_hash}/group/tag-add" method="post" class="mb-4">
+        <div class="form-group">
+            <label for="tagName">Название тега:</label>
+            <input type="text" class="form-control" name="tagName" id="tagName" placeholder="Введите название тега">
+        </div>
         <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <button type="submit">Назначить</button>
+        <button type="submit" class="btn btn-success mt-2">Создать</button>
     </form>
 
-    <h4>Пользователи: </h4>
-    <#list usersAndTags as userAndTag>
-        <b>${userAndTag.user.username}</b>
-        <p>${userAndTag.user.email}</p>
-        <p>${userAndTag.role}</p>
-        <form action="/projects/${project_hash}/group/change-role" method="post">
-            <input type="hidden" name="email" value="${userAndTag.user.email}">
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <button type="submit" name="action" value="PROMOTE">↑ Повысить роль</button>
-            <button type="submit" name="action" value="DEMOTE">↓ Понизить роль</button>
-        </form>
-        <ul>
-            <#if userAndTag.tags?has_content>
-                <#list userAndTag.tags as tag>
-                    <li>${tag.name}</li>
-                </#list>
-            <#else>
-                <p>Нет привязанных тегов</p>
-            </#if>
-        </ul>
-    </#list>
+    <#if sizeException??>
+        <div class="alert alert-danger">${sizeException}</div>
+    </#if>
+    <#if existsException??>
+        <div class="alert alert-danger">${existsException}</div>
+    </#if>
 
+    <h4>Назначить тег</h4>
+    <form action="/projects/${project_hash}/group/tag-set" method="post" class="mb-4">
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="tagName">Название тега</label>
+            </div>
+            <select class="form-control" name="tagName" id="tagName">
+                <#list tagsForProject as tag>
+                    <option value="${tag.name}">${tag.name}</option>
+                </#list>
+            </select>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="email">Пользователь:</label>
+            </div>
+            <select class="form-control" name="email" id="email">
+                <#list usersAndTags as userAndTag>
+                    <option value="${userAndTag.user.email}">${userAndTag.user.email}</option>
+                </#list>
+            </select>
+        </div>
+        <input type="hidden" name="_csrf" value="${_csrf.token}">
+        <button type="submit" class="btn btn-info mt-2">Назначить</button>
+    </form>
+
+    <h4>Пользователи:</h4>
+    <#list usersAndTags as userAndTag>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">${userAndTag.user.username}</h5>
+            <p class="card-text">${userAndTag.user.email}</p>
+            <p class="card-text"><strong>Роль:</strong> ${userAndTag.role}</p>
+            <form action="/projects/${project_hash}/group/change-role" method="post" class="mb-2">
+                <input type="hidden" name="email" value="${userAndTag.user.email}">
+                <input type="hidden" name="_csrf" value="${_csrf.token}">
+                <button type="submit" class="btn btn-secondary" name="action" value="PROMOTE">↑ Повысить роль</button>
+                <button type="submit" class="btn btn-secondary" name="action" value="DEMOTE">↓ Понизить роль</button>
+            </form>
+            <h6>Теги:</h6>
+            <ul class="list-group">
+                <#if userAndTag.tags?has_content>
+                    <#list userAndTag.tags as tag>
+                        <li class="list-group-item">${tag.name}</li>
+                    </#list>
+                <#else>
+                    <li class="list-group-item">Нет привязанных тегов</li>
+                </#if>
+            </ul>
+        </div>
+    </div>
+    </#list>
+</div>
 </@c.page>

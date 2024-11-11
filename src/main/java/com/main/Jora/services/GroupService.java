@@ -62,7 +62,7 @@ public class GroupService {
         if (tagName.length() > 50) throw new CustomException.LargeSizeException("");
         Project project = projectRepository.findProjectByHash(project_hash);
 
-        if (tagRepository.findTagByTagName(tagName) != null){
+        if (tagRepository.findTagByTagNameAndProjectId(tagName, project.getId()) != null){
             throw new CustomException.ObjectExistsException("Тег уже создан");
         }
         Tag tag = new Tag();

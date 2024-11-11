@@ -2,16 +2,23 @@ $(document).ready(function() {
     const userId = $("#currentUserId").val();
     const csrfToken = $('input[name="_csrf"]').val();
     console.log("id: " + userId);
-
+    let isDropdownOpen = false;
     // Получить уведомления и обновить интерфейс
     function fetchNotifications() {
+        if (isDropdownOpen) {
+            return;
+        }
         $.get(`/api/notifications/unread/${userId}`, function(data) {
             if (data.length > 0) {
                 $('#notification-count').text(data.length).show();
+                $('#notification-list').empty(); // Очистить перед добавлением новых уведомлений
                 data.forEach(notification => {
                     $('#notification-list').append(`
-                        <li data-id="${notification.id}">
-                            <strong>${notification.title}</strong><br>${notification.message}
+                        <li class="dropdown-item border-bottom py-2" data-id="${notification.id}">
+                            <a href="${notification.link}" class="text-decoration-none text-dark">
+                                <strong>${notification.title}</strong><br>
+                                <span class="small">${notification.message}</span>
+                            </a>
                         </li>
                     `);
                 });
@@ -20,14 +27,15 @@ $(document).ready(function() {
             }
         });
     }//Очистка и обновления списка
-    setInterval(function() {
+/*    setInterval(function() {
         $('#notification-list').empty();
-    }, 3000);
+    }, 3000);*/
     setInterval(fetchNotifications, 3000);
     // Обработчик клика на колокольчик
     $('#notification-bell').click(function() {
         $('#notification-list').empty();
         fetchNotifications();
+        isDropdownOpen = !isDropdownOpen;
         $('#notification-dropdown').toggle();
     });
 
@@ -51,5 +59,13 @@ $(document).ready(function() {
                 console.error("Ошибка при пометке уведомления как прочитанное:", error);
             }
         });
+    });
+    // Закрытие выпадающего меню при клике вне его
+    $(document).click(function(event) {
+        const target = $(event.target);
+        if (!target.closest('#notification-bell').length && !target.closest('#notification-dropdown').length) {
+            isDropdownOpen = false;
+            $('#notification-dropdown').hide();
+        }
     });
 });

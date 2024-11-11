@@ -10,9 +10,12 @@ import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserTaskRepository;
 import com.main.Jora.services.TaskService;
+import com.main.Jora.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,8 +37,9 @@ public class TaskController {
     @Autowired
     TagRepository tagRepository;
     @Autowired
+    UserService userService;
+    @Autowired
     UserProjectRoleReposirory userProjectRoleReposirory;
-
     @ModelAttribute("project")
     public Project getProject(@PathVariable String project_hash) {
         Long project_id = projectRepository.findIdByHash(project_hash);
@@ -44,7 +48,6 @@ public class TaskController {
         }
         return projectRepository.findById(project_id).orElse(null);
     }
-
     @ModelAttribute("tasks")
     public Iterable<Task> getTasksModel(@PathVariable String project_hash,
                                         @RequestParam(required = false) String deadlineFilter) {
@@ -52,6 +55,7 @@ public class TaskController {
         if (project_id == null) {
             return new ArrayList<>();
         }
+        System.out.println("Seraching by deadline: " + deadlineFilter);
         return taskService.findTasksByTimeLine(project_id, deadlineFilter);
     }
     @ModelAttribute("usersAndTasks")
@@ -65,9 +69,13 @@ public class TaskController {
         Long project_id = projectRepository.findIdByHash(project_hash);
         return userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project_id);
     }
-    @ModelAttribute("currentUser")
-    public User getCurrentUser(@AuthenticationPrincipal User user){
-        return user;
+    @ModelAttribute(name = "user")
+    public User getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            return userService.getUserById(user.getId());
+        }
+        return new User();
     }
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
@@ -75,7 +83,7 @@ public class TaskController {
         if (project_id == null) return "redirect:/home";
         return "tasks";
     }
-    @PostMapping//Нормально
+    @PostMapping
     public String createTask(@Valid @ModelAttribute("task") Task task,
                              Errors errors,
                              @PathVariable String project_hash,
@@ -163,7 +171,12 @@ public class TaskController {
             model.addAttribute("idException", "Нет задачи с таким id");
             return "tasks";
         }
-        taskService.setTagToTask(taskId, tagName);
+        try{
+            taskService.setTagToTask(taskId, project_hash ,tagName);
+        } catch (CustomException.ObjectExistsException oe){
+            model.addAttribute("tagException", "Не найдена задача с таким id");
+            return "tasks";
+        }
         return "redirect:/projects/" + project_hash + "/tasks";
     }
     @PostMapping("/edit/join")

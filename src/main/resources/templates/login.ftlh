@@ -1,18 +1,26 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
-    <h2>Авторизация</h2>
-    <form action="/login" method="post">
-        <label for="email">Почта: <input type="text" name="username"></label>
-        <br>
-        <label for="password">Пароль: <input type="password" name="password"></label>
-        <br>
-        <input type="hidden" name="_csrf" value="${_csrf.token}">
+    <div class="h-100 container d-flex justify-content-center align-items-center margin-top-10">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">Авторизация</h2>
+            <form action="/login" method="post" class="border p-4 rounded shadow">
+                <div class="form-group">
+                    <label for="email">Почта:</label>
+                    <input type="text" class="form-control" name="username" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                </div>
+                <input type="hidden" name="_csrf" value="${_csrf.token}">
 
-        <#if SPRING_SECURITY_LAST_EXCEPTION??>
-            <h4 style="color: red">Неправильный логин или пароль</h4>
-        </#if>
+                <#if SPRING_SECURITY_LAST_EXCEPTION??>
+                    <div class="alert alert-danger">Неправильный логин или пароль</div>
+                </#if>
 
-        <input type="submit" name="Авторизация">
-    </form>
-    <a href="/registration">Регистрация</a>
+                <button type="submit" class="btn btn-primary btn-block">Авторизация</button>
+            </form>
+            <a href="/registration" class="mt-3 d-block text-left">Регистрация</a>
+        </div>
+    </div>
 </@c.page>

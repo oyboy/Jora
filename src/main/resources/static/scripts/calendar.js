@@ -71,6 +71,7 @@ $(document).ready(function() {
                         $('#taskPriority').text(event.priority);
                         $('#taskDescription').text(event.description ? event.description : 'Без описания');
                         // Добавляем отображение аватаров пользователе
+                        console.log("Clicked this shit");
                         $.ajax({
                             url: `/home/api/calendar/tasks/${event.id}/users`,
                             method: 'GET',
@@ -95,11 +96,7 @@ $(document).ready(function() {
                                 console.error("Ошибка при загрузке пользователей");
                             }
                         });
-
-                        $('#taskModal').modal({
-                            backdrop: false,
-                            display: 'show'
-                        });
+                        $('#taskModal').modal('show');
                     },
                     editable: true,
                     //Перетаскивание (изменение даты начала)

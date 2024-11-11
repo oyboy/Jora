@@ -15,27 +15,27 @@ $(document).ready(function() {
             }
         });
     });
-
+    let subscriptions = {};
     $(".showCommentsButton").on("click", function() {
         const taskId = $(this).data("task-id");
         console.log("Task ID: " + taskId);
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            // Подписка на сообщения
-            stompClient.subscribe('/topic/projects/' + projectHash + '/tasks/' + taskId + "/comment", function (response) {
-                const comment = JSON.parse(response.body);
-                const commentsList = $(`.commentsSection[data-task-id="${taskId}"] .commentsList`);
-                commentsList.append(createCommentElement(comment, taskId));
-            }.bind(this));
-
-            loadComments(taskId); // Загрузка комментариев при открытии
-        });
+        if (!subscriptions[taskId]) {
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                subscriptions[taskId] = stompClient.subscribe('/topic/projects/' + projectHash + '/tasks/' + taskId + "/comment", function (response) {
+                    const comment = JSON.parse(response.body);
+                    const commentsList = $(`.commentsSection[data-task-id="${taskId}"] .commentsList`);
+                    commentsList.append(createCommentElement(comment, taskId));
+                });
+                loadComments(taskId); // Загрузка комментариев при открытии
+            });
+        }
 
         const commentsSection = $(this).siblings(".commentsSection");
-        commentsSection.toggle(); //switch visibility
+        commentsSection.toggle();
     });
     //Отправка на сервер
     $(".addCommentButton").on("click", function() {
@@ -107,7 +107,6 @@ $(document).ready(function() {
         function showReaders(readByUsers) {
             const readerListDiv = document.getElementById('readerList');
             readerListDiv.innerHTML = ''; // Очистка предыдущих данных
-            document.getElementById("close-button").addEventListener("click", closeModal);
             // Формируем список пользователей
             readByUsers.forEach(reader => {
                 if (reader.userId !== currentUserId) { // Проверяем, является ли пользователь автором
@@ -118,11 +117,16 @@ $(document).ready(function() {
             });
             //Имеет смысл показывать окно в том случае, если действительно есть такие пользователи
             if (readerListDiv.childNodes.length > 0) {
-                document.getElementById('readerModal').style.display = 'block';
+                // Открыть модальное окно с помощью Bootstrap
+                const readerModal = new bootstrap.Modal(document.getElementById('readerModal'));
+                readerModal.show();
             }
         }
         function closeModal() {
-            document.getElementById('readerModal').style.display = 'none';
+            const readerModal = bootstrap.Modal.getInstance(document.getElementById('readerModal'));
+            if (readerModal) {
+                readerModal.hide();
+            }
         }
 
         // Подключение Intersection Observer для отслеживания

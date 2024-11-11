@@ -12,7 +12,9 @@ import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserRepository;
 import com.main.Jora.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +60,14 @@ public class GroupController {
         Project project = projectRepository.findProjectByHash(project_hash);
         return userProjectRoleReposirory
                 .getUserProjectRoleByUserAndProject(currentUser, project);
+    }
+    @ModelAttribute(name = "user")
+    public User getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            return userRepository.findById(user.getId()).orElse(null);
+        }
+        return new User();
     }
     @GetMapping
     public String getGroup(){

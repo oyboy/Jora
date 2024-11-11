@@ -1,46 +1,41 @@
 <#import "parts/common.ftlh" as c>
-
 <@c.page>
-    <div style="text-align: right">
-    <#if user?? && user.email??>
-        <img src="/home/user/${user.id}/avatar" class="avatar" style="width: 50px; height:50px"/>
-        <h4>Имя пользователя:<a href="/home/user/${user.id}"><i>${user.username}</i></a></h4>
-        <h4>Почта пользователя: <i>${user.email}</i></h4>
-        <form action="/logout" method="post">
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <input type="submit" value="Выйти"/>
+    <div class="container">
+        <h1 class="text-center mb-4">My Projects</h1>
+
+        <form action="/home/join" method="post" class="mb-4">
+            <div class="input-group">
+                <label for="project_hash" class="input-group-text">Ссылка:</label>
+                <input type="text" id="project_hash" name="project_hash" class="form-control" placeholder="Введите ссылку проекта" required>
+                <input type="hidden" name="_csrf" value="${_csrf.token}">
+                <button type="submit" class="btn btn-secondary">Присоединиться</button>
+            </div>
+            <#if userError??>
+                <div class="alert alert-danger mt-2">${userError}</div>
+            </#if>
         </form>
-    <#else >
-        <a href="login">Войти</a>
-    </#if>
-        <#include "parts/notification.ftlh">
-    </div>
-    <h2><a href="/home/calendar">Календарь</a></h2>
 
-    <form action="/home/join" method="post">
-        <label for="project_hash">Ссылка: </label>
-        <input type="text" id="project_hash" name="project_hash">
-        <input type="hidden" name="_csrf" value="${_csrf.token}">
-        <button type="submit">Присоединиться</button>
-    </form>
-    <#if userError??>
-        <div class="error">${userError}</div>
-    </#if>
+        <form action="/home/create" method="get" class="mb-4">
+            <button type="submit" class="btn btn-success">+ Создать новый проект</button>
+        </form>
 
-    <form action="/home/create" method="get">
-        <input type="submit" value="+"/>
-    </form>
-<h1 style="text-align: center">My Projects</h1>
-<#list projects as project>
-    <div>
-        <h2>${project.title}</h2>
-        <p>${project.description}</p>
-        <i>${project.createdAt?date}</i>
-        <a href="/projects/${project.hash}/tasks">Go to tasks</a>
-        <a href="/projects/${project.hash}/group">To group</a>
-        <a href="/projects/${project.hash}/discussion">To discussion</a>
+        <#list projects as project>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title">${project.title}</h2>
+                    <p class="card-text" style="white-space: pre-wrap;">${project.description}</p>
+                    <i class="text-muted">${project.createdAt?date}</i>
+                    <div class="mt-2">
+                        <a href="/projects/${project.hash}/tasks" class="btn btn-info btn-sm">Перейти к задачам</a>
+                        <a href="/projects/${project.hash}/group" class="btn btn-secondary btn-sm">В группу</a>
+                        <a href="/projects/${project.hash}/discussion" class="btn btn-warning btn-sm">В обсуждение</a>
+                    </div>
+                </div>
+            </div>
+        </#list>
+
+        <#if projects?size == 0>
+            <h2 class="text-center">У вас ещё нет проектов. <a href="/home/create">Создать?</a></h2>
+        </#if>
     </div>
-    <#else>
-    <h2>У вас ещё нет проектов. <a href="/home/create">Создать?</a></h2>
-</#list>
 </@c.page>

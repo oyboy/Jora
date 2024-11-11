@@ -12,7 +12,10 @@ public interface TagRepository extends CrudRepository<Tag, Long> {
     List<Tag> findTagsByProjectId(@Param("projectId") Long projectId);
     @Query("SELECT t FROM Tag t " +
             "JOIN t.projects p " +
-            "WHERE t.name = :tagName")
+            "WHERE t.name = :tagName and p.id = :projectId")
+    Tag findTagByTagNameAndProjectId(@Param("tagName") String tagName, @Param("projectId") Long projectId);
+    @Query(value = "SELECT * FROM tag AS t " +
+            "WHERE BINARY t.name = :tagName", nativeQuery = true)
     Tag findTagByTagName(@Param("tagName") String tagName);
 
     @Query("SELECT t FROM Tag t " +

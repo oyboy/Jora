@@ -31,12 +31,6 @@ public class DiscussionRestController {
     DiscussionService discussionService;
     @Autowired
     private UserService userService;
-
-    @ModelAttribute(name = "projectHash")
-    public String getHash(@PathVariable("project_hash") String project_hash){
-        return project_hash;
-    }
-
     @MessageMapping("/projects/{project_hash}/discussion")
     @SendTo("/topic/projects/{project_hash}/discussion")
     public DiscussionCommentDTO sendComment(@Payload String jsonPayload,

@@ -37,12 +37,12 @@ public class UserService {
         return true;
     }
     public void editUser(Long user_id, User form)
-            throws CustomException.ObjectExistsException{
-        log.warn("Got user form: {}", form);
+            throws CustomException.ObjectExistsException {
+        log.warn("Got user form: {} (id), {} (name), {} (email)", form.getId(), form.getUsername(), form.getEmail());
         User user = userRepository.findById(user_id).orElse(null);
         if (user == null) return;
+        log.warn("Updating user: {} (id), {} (name), {} (email)", user.getId(), user.getUsername(), user.getEmail());
 
-        //if email edited
         if (!form.getEmail().equals(user.getEmail())){
             if (userRepository.findByEmail(form.getEmail()) != null)
                 throw new CustomException.ObjectExistsException("");
@@ -50,14 +50,13 @@ public class UserService {
         }
         user.setUsername(form.getUsername());
 
-        //password change
         if (form.getPassword() != null){
+            log.info("Changing password");
             if (!form.getPassword().equals(form.getConfirmPassword())){
                 throw new IllegalArgumentException("Confirmation password is incorrect");
             }
             user.setPassword(passwordEncoder.encode(form.getPassword()));
         }
-        log.info("Updating user {}", user);
         userRepository.save(user);
     }
     public User getUserById(Long user_id){
@@ -72,7 +71,6 @@ public class UserService {
                 .outputQuality(0.5) // Качество сжатия до 50%
                 .toOutputStream(os);
 
-        //Если добавлять дефолтный аватар через js, то придётся тут кое-что переделать
         UserAvatar userAvatar = findAvatarByUserId(user_id);
         userAvatar.setBytes(os.toByteArray());
 

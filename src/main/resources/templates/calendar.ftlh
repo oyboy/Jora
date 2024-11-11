@@ -2,28 +2,32 @@
 <@c.page>
     <script src="/static/scripts/calendar.js"></script>
     <body>
-    <h2>Календарь</h2>
-    <select id="projectFilter">
-        <option value="all">Все мои проекты</option>
-    </select>
-    <select id="taskFilter">
-        <option value="my">Мои задачи</option>
-        <option value="all">Мои и коллег</option>
-    </select>
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="projectFilter">Фильтр проектов</label>
+                <select id="projectFilter" class="form-control">
+                    <option value="all">Все мои проекты</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="taskFilter">Фильтр задач</label>
+                <select id="taskFilter" class="form-control">
+                    <option value="my">Мои задачи</option>
+                    <option value="all">Мои и коллег</option>
+                </select>
+            </div>
+        </div>
 
-    <div class="container">
-        <div id="calendar"></div>
+        <div id="calendar" class="border border-white"></div>
     </div>
-    <br>
     <!-- Modal -->
-    <div class="modal" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="taskTitle">Заголовок задачи</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
                     <p><strong>Начало:</strong> <span id="taskStart"></span></p>
@@ -33,7 +37,7 @@
                     <div id="taskUsers" class="users-list"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                 </div>
             </div>
         </div>

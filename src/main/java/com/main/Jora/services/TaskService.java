@@ -105,8 +105,14 @@ public class TaskService {
         taskRepository.save(task);
     }
 
-    public void setTagToTask(Long task_id, String tagName){
+    public void setTagToTask(Long task_id, String project_hash, String tagName) throws
+            CustomException.ObjectExistsException {
         Task task = taskRepository.findById(task_id).orElse(null);
+        Long projectId = projectRepository.findIdByHash(project_hash);
+
+        if (!taskRepository.existsByProjectIdAndId(projectId, task.getId()))
+            throw new CustomException.ObjectExistsException("");
+
         Tag tag = tagRepository.findTagByTagName(tagName);
         if (!task.getTags().contains(tag)){
             log.info("Setting tag {} to task {}", tag, task);
@@ -194,6 +200,12 @@ public class TaskService {
         log.info("Changing date: {}", calendarTaskDTO);
         task.setCreatedAt(calendarTaskDTO.getCreatedAt());
         task.setDeadline(calendarTaskDTO.getDeadline());
+        taskRepository.save(task);
+    }
+    public void changeStatus(Task taskForm){
+        Task task = taskRepository.findById(taskForm.getId()).orElse(null);
+        log.info("Changing status: {}", task);
+        task.setStatus(taskForm.getStatus());
         taskRepository.save(task);
     }
 }

@@ -50,6 +50,7 @@ public class CommentService {
                 userCommentDTO.getCommentId()
         );
     }
+    //Отображаются только те пользователи, которые привязаны к задаче
     public void saveUnreadComments(Comment savedComment, User currentUser){
         log.info("Saving unread comments");
         List<User> usersForTask = userTaskRepository.getUsersByTaskId(savedComment.getTask().getId());

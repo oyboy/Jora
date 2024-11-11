@@ -46,8 +46,9 @@ public class ProjectService {
         return userProjectRoleReposirory.findProjectsByUserId(user.getId());
     }
     public void addUserToProject(String project_hash, User user) throws CustomException.UserAlreadyJoinedException,
-            CustomException.UserBannedException{
+            CustomException.UserBannedException, CustomException.ObjectExistsException{
         Project project = projectRepository.findProjectByHash(project_hash);
+        if (project == null) throw new CustomException.ObjectExistsException("Проекта не существует");
 
         // Проверяем существует ли уже связь пользователя с проектом
         if (userProjectRoleReposirory.existsByUserIdAndProjectId(user.getId(), project.getId())) {
