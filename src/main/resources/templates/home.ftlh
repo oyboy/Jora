@@ -22,7 +22,17 @@
         <#list projects as project>
             <div class="card mb-3">
                 <div class="card-body">
-                    <h2 class="card-title">${project.title}</h2>
+                    <h2 class="card-title d-flex justify-content-between">
+                        <span>${project.title}</span>
+                        <i class="bi bi-link-45deg"
+                           style="cursor: pointer;"
+                           onclick="copyLink('${project.hash}', this)"
+                           data-bs-container="body"
+                           data-bs-toggle="popover"
+                           data-bs-content="Ссылка скопирована!"
+                           data-bs-placement="top">
+                        </i>
+                    </h2>
                     <p class="card-text" style="white-space: pre-wrap;">${project.description}</p>
                     <i class="text-muted">${project.createdAt?date}</i>
                     <div class="mt-2">
@@ -38,4 +48,18 @@
             <h2 class="text-center">У вас ещё нет проектов. <a href="/home/create">Создать?</a></h2>
         </#if>
     </div>
+
+    <script>
+        function copyLink(hash, element) {
+            navigator.clipboard.writeText(hash).then(() => {
+                $(element).popover('show');
+                console.log("copued");
+                setTimeout(() => {
+                    $(element).popover('hide');
+                }, 1500);
+            }).catch(err => {
+                console.error('Ошибка при копировании: ', err);
+            });
+        }
+    </script>
 </@c.page>
