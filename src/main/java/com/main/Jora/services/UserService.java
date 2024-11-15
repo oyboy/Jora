@@ -8,6 +8,8 @@ import com.main.Jora.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +38,7 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
+    @CachePut(value = "user", key = "#user_id")
     public void editUser(Long user_id, User form)
             throws CustomException.ObjectExistsException {
         log.warn("Got user form: {} (id), {} (name), {} (email)", form.getId(), form.getUsername(), form.getEmail());
@@ -59,7 +62,8 @@ public class UserService {
         }
         userRepository.save(user);
     }
-    public User getUserById(Long user_id){
+    @Cacheable(value = "user", key = "#user_id")
+    public User getUserById(Long user_id) {
         return userRepository.findById(user_id).orElse(null);
     }
     public void setAvatar(MultipartFile file, Long user_id) throws IOException{

@@ -1,7 +1,5 @@
 package com.main.Jora.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.main.Jora.notifications.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -10,6 +8,7 @@ import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @ToString
 @Data
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,12 +39,12 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<UserProjectRole> userProjectRoles = new HashSet<>();
+    transient private Set<UserProjectRole> userProjectRoles = new HashSet<>();
     //Связь пользователей с задачами
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<UserTask> userTasks = new HashSet<>();
+    transient private Set<UserTask> userTasks = new HashSet<>();
 
     //Связь пользователей с тегами
     @EqualsAndHashCode.Exclude
