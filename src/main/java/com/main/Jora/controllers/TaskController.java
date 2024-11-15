@@ -55,7 +55,6 @@ public class TaskController {
         if (project_id == null) {
             return new ArrayList<>();
         }
-        System.out.println("Seraching by deadline: " + deadlineFilter);
         return taskService.findTasksByTimeLine(project_id, deadlineFilter);
     }
     @ModelAttribute("usersAndTasks")

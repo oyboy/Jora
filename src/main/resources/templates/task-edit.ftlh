@@ -1,79 +1,90 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
-    <h1>Task edit</h1>
+<h1 class="my-4" style="margin-left: 45px;">Редактирование задачи</h1>
 
+<div class="container">
     <#if currentRole != "ROLE_PARTICIPANT">
-        <form action="/projects/${project_hash}/tasks/edit/join" method="post">
+        <form action="/projects/${project_hash}/tasks/edit/join" method="post" class="mb-4">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="hidden" name="task_id" value="${task.id}">
-            <button type="submit">Присоединиться</button>
+            <button type="submit" class="btn btn-outline-secondary">Присоединиться</button>
         </form>
         <#if userError??>
-            <div class="error">${userError}</div>
+            <div class="alert alert-danger">${userError}</div>
         </#if>
-        <#else>
-        <form action="/projects/${project_hash}/tasks/edit/help" method="post">
+    <#else>
+        <form action="/projects/${project_hash}/tasks/edit/help" method="post" class="mb-4">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="hidden" name="task_id" value="${task.id}">
-            <button type="submit">Запросить помощь</button>
+            <button type="submit" class="btn btn-warning">Запросить помощь</button>
         </form>
-            <#if moderNotFound??>
-                <div class="error">${moderNotFound}</div>
-            </#if>
-            <#if notificationResult??>
-                <div class="info">${notificationResult}</div>
-            </#if>
+        <#if moderNotFound??>
+            <div class="alert alert-danger">${moderNotFound}</div>
+        </#if>
+        <#if notificationResult??>
+            <div class="alert alert-info">${notificationResult}</div>
+        </#if>
     </#if>
 
     <form action="/projects/${project_hash}/tasks/edit" method="post">
-        <label for="name">Название:</label>
-        <input type="text" id="name" name="name" value="${task.name}" required>
-        <#if errors?? && errors.getFieldError("name")??>
-            <div class="error">${errors.getFieldError("name").defaultMessage}</div>
-        </#if>
-        <br>
+        <div class="mb-3">
+            <label for="name" class="form-label fw-bold">Название:</label>
+            <input type="text" id="name" name="name" class="form-control" value="${task.name}" required>
+            <#if errors?? && errors.getFieldError("name")??>
+                <div class="alert alert-danger mt-1">${errors.getFieldError("name").defaultMessage}</div>
+            </#if>
+        </div>
 
-        <label for="description">Описание:</label>
-        <input type="text" id="description" name="description" value="${task.description}">
-        <#if errors?? && errors.getFieldError("description")??>
-            <div class="error">${errors.getFieldError("description").defaultMessage}</div>
-        </#if>
-        <br>
+        <div class="mb-3">
+            <label for="description" class="form-label fw-bold">Описание:</label>
+            <input type="text" id="description" name="description" class="form-control" value="${task.description}">
+            <#if errors?? && errors.getFieldError("description")??>
+                <div class="alert alert-danger mt-1">${errors.getFieldError("description").defaultMessage}</div>
+            </#if>
+        </div>
 
-        <label for="deadline">Дата завершения:</label>
-        <input type="datetime-local" name="deadline" value="${task.deadline?if_exists}">
-        <#if errors?? && errors.getFieldError("deadline")??>
-            <div class="error">${errors.getFieldError("deadline").defaultMessage}</div>
-        </#if>
-        <br>
+        <div class="mb-3">
+            <label for="deadline" class="form-label fw-bold">Дата завершения:</label>
+            <input type="datetime-local" name="deadline" class="form-control" value="${task.deadline?if_exists}">
+            <#if errors?? && errors.getFieldError("deadline")??>
+                <div class="alert alert-danger mt-1">${errors.getFieldError("deadline").defaultMessage}</div>
+            </#if>
+        </div>
 
-        <label>Приоритет:</label>
-        <label>
-            <input type="radio" name="priority" value="LOW"
-                    ${(task.priority == "LOW")?then("checked", "")}> Низкий
-        </label>
-        <label>
-            <input type="radio" name="priority" value="MEDIUM"
-                    ${(task.priority == "MEDIUM")?then("checked", "")}> Средний
-        </label>
-        <label>
-            <input type="radio" name="priority" value="HIGH"
-                    ${(task.priority == "HIGH")?then("checked", "")}> Высокий
-        </label>
-        <br>
+        <fieldset class="mb-3">
+            <legend class="col-form-label fw-bold">Приоритет:</legend>
+            <div>
+                <label class="form-check">
+                    <input type="radio" name="priority" value="LOW" class="form-check-input"
+                            ${(task.priority == "LOW")?then("checked", "")}>
+                    <span class="form-check-label">Низкий</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" name="priority" value="MEDIUM" class="form-check-input"
+                            ${(task.priority == "MEDIUM")?then("checked", "")}>
 
-        <label for="status">Статус: </label>
-        <select name="status" id="status">
-            <option value="CREATED"
-                    ${(task.status == "CREATED")?then("selected","")}>Created</option>
-            <option value="IN_PROGRESS"
-                    ${(task.status == "IN_PROGRESS")?then("selected","")}>In progress</option>
-            <option value="DONE"
-                    ${(task.status == "DONE")?then("selected","")}>Done</option>
-        </select>
+                    <span class="form-check-label">Средний</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" name="priority" value="HIGH" class="form-check-input"
+                            ${(task.priority == "HIGH")?then("checked", "")}>
+                    <span class="form-check-label">Высокий</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="mb-3">
+            <label for="status" class="form-label fw-bold">Статус:</label>
+            <select name="status" id="status" class="form-select">
+                <option value="CREATED" ${(task.status == "CREATED")?then("selected","")}>Создано</option>
+                <option value="IN_PROGRESS" ${(task.status == "IN_PROGRESS")?then("selected","")}>В процессе</option>
+                <option value="DONE" ${(task.status == "DONE")?then("selected","")}>Завершено</option>
+            </select>
+        </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <input type="hidden" name="task_id" value="${task.id}">
-        <button type="submit">Сохранить</button>
+        <button type="submit" class="btn btn-success">Сохранить</button>
     </form>
+</div>
 </@c.page>
