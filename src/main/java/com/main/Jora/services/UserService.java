@@ -39,11 +39,11 @@ public class UserService {
         return true;
     }
     @CachePut(value = "user", key = "#user_id")
-    public void editUser(Long user_id, User form)
+    public User editUser(Long user_id, User form)
             throws CustomException.ObjectExistsException {
         log.warn("Got user form: {} (id), {} (name), {} (email)", form.getId(), form.getUsername(), form.getEmail());
         User user = userRepository.findById(user_id).orElse(null);
-        if (user == null) return;
+        if (user == null) return null;
         log.warn("Updating user: {} (id), {} (name), {} (email)", user.getId(), user.getUsername(), user.getEmail());
 
         if (!form.getEmail().equals(user.getEmail())){
@@ -61,6 +61,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(form.getPassword()));
         }
         userRepository.save(user);
+        return user;
     }
     @Cacheable(value = "user", key = "#user_id")
     public User getUserById(Long user_id) {

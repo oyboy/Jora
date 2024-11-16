@@ -12,6 +12,7 @@ import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +26,8 @@ public class GroupService {
     ProjectRepository projectRepository;
     @Autowired
     UserRepository userRepository;
-    public void changeUserRole(User user, Project project, String action) {
+    @CachePut(value = "user", key = "#user.getId()")
+    public User changeUserRole(User user, Project project, String action) {
         Role currentRole = userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project.getId());
         Role newRole = currentRole;
         if ("PROMOTE".equals(action)) {
@@ -44,6 +46,7 @@ public class GroupService {
         if (newRole != currentRole) {
             changeRole(user, newRole, project);
         }
+        return user;
     }
     private void changeRole(User user, Role role, Project project) {
         UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
@@ -51,11 +54,13 @@ public class GroupService {
         log.info("Changing role {} for user {}", role, user);
         userProjectRoleReposirory.save(userProjectRole);
     }
-    public void banUser(User user, Project project){
+    @CachePut(value = "user", key = "#user.getId()")
+    public User banUser(User user, Project project){
         UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
         userProjectRole.setBanned(!userProjectRole.isBanned());
         log.info("Changing ban status for user {}", userProjectRole.getUser());
         userProjectRoleReposirory.save(userProjectRole);
+        return user;
     }
     public void createTag(String project_hash, String tagName)
             throws CustomException.LargeSizeException, CustomException.ObjectExistsException {
