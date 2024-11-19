@@ -78,6 +78,7 @@
             <select name="status" id="status" class="form-select">
                 <option value="CREATED" ${(task.status == "CREATED")?then("selected","")}>Создано</option>
                 <option value="IN_PROGRESS" ${(task.status == "IN_PROGRESS")?then("selected","")}>В процессе</option>
+                <option value="TESTING" ${(task.status == "TESTING")?then("selected","")}>Тестируется</option>
                 <option value="DONE" ${(task.status == "DONE")?then("selected","")}>Завершено</option>
             </select>
         </div>

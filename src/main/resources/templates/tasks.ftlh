@@ -25,9 +25,9 @@
     <#--Kanban-->
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="kanban-column" data-status="CREATED">
-                    <h3 class="text-primary">Создано</h3>
+                    <h3 class="text-info">Создано</h3>
                     <div class="task-container border rounded p-2" ondrop="drop(event)" ondragover="allowDrop(event)">
                         <#list tasks as task>
                             <#if task.status == 'CREATED'>
@@ -37,9 +37,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="kanban-column" data-status="IN_PROGRESS">
-                    <h3 class="text-warning">В процессе</h3>
+                    <h3 class="text-primary">В процессе</h3>
                     <div class="task-container border rounded p-2" ondrop="drop(event)" ondragover="allowDrop(event)">
                         <#list tasks as task>
                             <#if task.status == 'IN_PROGRESS'>
@@ -49,7 +49,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="kanban-column" data-status="TESTING">
+                    <h3 class="text-warning">Тестируется</h3>
+                    <div class="task-container border rounded p-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <#list tasks as task>
+                            <#if task.status == 'TESTING'>
+                                <#include "parts/task-card.ftlh"/>
+                            </#if>
+                        </#list>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="kanban-column" data-status="DONE">
                     <h3 class="text-success">Завершено</h3>
                     <div class="task-container border rounded p-2" ondrop="drop(event)" ondragover="allowDrop(event)">
