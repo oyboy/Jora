@@ -93,7 +93,6 @@ public class TaskService {
         return taskRepository.findByProjectIdAndDeadlineIsNull(projectId);
     }
 
-    //Продолжение танцев с бубнами из @PostMapping("/edit")
     public void changeTaskFieldsAndSave(Long task_id, Task form){
         Task task = taskRepository.findById(task_id).orElse(null);
         task.setName(form.getName());
@@ -130,6 +129,7 @@ public class TaskService {
         if (userTaskRepository.isModeratorAssignedToTask(task_id)) throw new CustomException.UserAlreadyJoinedException("");
         List<Tag> task_tags = tagRepository.findTagsByTaskId(task_id);
         Long project_id = taskRepository.findProjectIdByTaskId(task_id);
+        log.warn("PRojectID? : "+ project_id);
         List<User> moderators = userProjectRoleReposirory.findModeratorsByProjectId(project_id);
 
         User bestModerator = null;
@@ -149,18 +149,20 @@ public class TaskService {
         log.info("Найден модер {} с коэффициентом {}", bestModerator, maxScore);
         log.info("Попытка отправить сообщение");
         notificationService.sendNotificationTo(bestModerator, "Запрос о помощи",
-                generateMessage(task_id, project_id));
+                generateMessage(task_id), createLinkToTasks(project_id));
     }
-    private String generateMessage(Long task_id, Long project_id){
+    private String generateMessage(Long task_id){
         Task task = taskRepository.findById(task_id).orElse(null);
-        String project_hash = projectRepository.findHashById(project_id);
         return "Пользователь запросил помощь с задачей " +
-                task_id + "/" + task.getName() +
-                "\nСсылка: http://localhost:8080/projects/" + project_hash + "/tasks";
+                task_id + "/" + task.getName();
+    }
+    private String createLinkToTasks(Long project_id){
+        String project_hash = projectRepository.findHashById(project_id);
+        //MUST BE CHANGED IN DEPLOY
+        return "http://localhost:8081/projects/" + project_hash + "/tasks";
     }
     // Oценка по совпадениями тегов
     private int calculateTagScore(List<Tag> moderatorTags, List<Tag> taskTags){
-        // Set для повышения производительности поиска
         Set<String> moderatorTagNames = new HashSet<>();
 
         for (Tag tag : moderatorTags) {
@@ -178,7 +180,7 @@ public class TaskService {
     private int calculateLoadScore(User user, Long project_id){
         List<Task> tasks = taskRepository.findTasksByUserAndProject(user.getId(), project_id);
         if (tasks.isEmpty()) {
-            return 0; // Если нет задач, коэффициент загруженности равен 0
+            return 0;
         }
         //Количество взятых задач
         int takedTasks = (int) tasks.stream().filter(task -> task.getStatus() == Status.IN_PROGRESS ||

@@ -25,9 +25,6 @@ public class NotificationController {
     public ResponseEntity<Void> markAsRead(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal User user){
         Notification notification = notificationService.getNotificationById(id);
-        /*if (notification == null || !Objects.equals(notification.getUser().getId(), user.getId())) {
-            return ResponseEntity.notFound().build();
-        }*/
         if (notification == null ) return ResponseEntity.notFound().build();
         notificationService.markNotificationAsRead(notification, user);
         simpMessagingTemplate.convertAndSendToUser(user.getId().toString(), "/topic/notifications", notification);

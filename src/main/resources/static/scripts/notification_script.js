@@ -13,9 +13,10 @@ $(document).ready(function() {
                 $('#notification-count').text(data.length).show();
                 $('#notification-list').empty(); // Очистить перед добавлением новых уведомлений
                 data.forEach(notification => {
+                    const link = notification.link || window.location.href;
                     $('#notification-list').append(`
                         <li class="dropdown-item border-bottom py-2" data-id="${notification.id}">
-                            <a href="${notification.link}" class="text-decoration-none text-dark">
+                            <a href="${link}" class="text-decoration-none text-dark">
                                 <strong>${notification.title}</strong><br>
                                 <span class="small">${notification.message}</span>
                             </a>

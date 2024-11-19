@@ -20,17 +20,13 @@
     overflow: visible;
 }
 .dropdown-item {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
     padding: 10px;
     min-height: 50px;
 }
-.dropdown-item a {
-    color: inherit;
-    text-decoration: none;
-    display: block;
-    width: 100%;
+.dropdown-item span.small {
+    overflow: visible;
+    white-space: normal;
+    word-wrap: break-word;
 }
 .dropdown-item a:hover {
     text-decoration: underline;

@@ -48,7 +48,7 @@ public class NotificationService {
         }
     }
 
-    public void sendNotificationTo(User user, String title, String message) throws
+    public void sendNotificationTo(User user, String title, String message, String link) throws
             CustomException.ObjectExistsException{
         if (userNotificationRepository.existsByUserIdAndMessage(user.getId(), message))
             throw new CustomException.ObjectExistsException("Запрос уже существует");
@@ -56,6 +56,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setTitle(title);
         notification.setMessage(message);
+        notification.setLink(link);
 
         UserNotification userNotification = new UserNotification();
         userNotification.setUser(user);

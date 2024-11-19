@@ -10,7 +10,7 @@
                     <li class="dropdown-item border-bottom" data-id="${notification.id}">
                         <a href="${notification.link}">
                             <strong>${notification.title}</strong><br>
-                            <span class="small">${notification.message}</span>
+                            <span class="small">${notification.message}</span> <#--Тут вылезающий текст-->
                         </a>
                     </li>
                 </#list>

@@ -1,7 +1,7 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
     <div class="container">
-        <h1 class="text-center mb-4">My Projects</h1>
+        <h1 class="text-center mb-4">Мои проекты</h1>
 
         <form action="/home/join" method="post" class="mb-4">
             <div class="input-group">

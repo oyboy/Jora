@@ -35,7 +35,6 @@
         </encoder>
     </appender>
 
-    <!-- Уровень логирования для разных логгеров -->
     <logger name="com.main.Jora" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO_WARN_FILE" />
