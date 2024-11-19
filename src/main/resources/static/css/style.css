@@ -109,6 +109,18 @@
     display: flex;
     flex-direction: column;
 }
+.comment {
+    background-color: #636977;
+    border: 1px solid #01342d;
+    color: ghostwhite;
+    align-self: flex-start;
+}
+.author-comment {
+    background-color: #e0f7fa;
+    border: 1px solid #009688;
+    margin-left: auto;
+    align-self: flex-end;
+}
 .avatar {
     width: 150px;
     height: 150px;
