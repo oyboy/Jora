@@ -123,7 +123,7 @@ public class TaskController {
     private boolean isAuthorizedToEditTask(Task task, User user, Role role) {
         return userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId()) || role == Role.ROLE_MODERATOR;
     }
-    @PostMapping("/edit") //Чё-то воняет. Главное, что работает!
+    @PostMapping("/edit")
     public String editTask(@RequestParam("task_id") Long task_id,
                            @Valid @ModelAttribute Task form,
                            Errors errors,

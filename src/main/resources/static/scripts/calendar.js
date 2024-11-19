@@ -122,8 +122,12 @@ $(document).ready(function() {
                                 success: function(response) {
                                     console.log("Задача успешно обновлена");
                                 },
-                                error: function() {
-                                    alert("Ошибка при обновлении задачи");
+                                error: function(jqXHR) {
+                                    if (jqXHR.status === 403) {
+                                        alert("Ошибка: Доступ запрещен. Убедитесь, что у вас есть нужные права.");
+                                    } else {
+                                        alert("Ошибка при обновлении задачи");
+                                    }
                                     revertFunc(); // Откат к предыдущему состоянию, если ошибка
                                 }
                             })

@@ -1,5 +1,6 @@
 package com.main.Jora.calendar;
 
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Task;
 import com.main.Jora.models.User;
@@ -73,9 +74,17 @@ public class CalendarRestController {
     }
 
     @PostMapping("/tasks/update")
-    public ResponseEntity<Void> changeDate(@RequestBody CalendarTaskDTO calendarTaskDTO) {
+    public ResponseEntity<Void> changeDate(@RequestBody CalendarTaskDTO calendarTaskDTO,
+                                           @AuthenticationPrincipal User user) {
+        //Из календаря можно менять только свои задачи
+        if (!isAuthorizedToEditTask(calendarTaskDTO, user)) {
+            return ResponseEntity.status(403).build();
+        }
         taskService.changeDate(calendarTaskDTO);
         return ResponseEntity.ok().build();
+    }
+    private boolean isAuthorizedToEditTask(CalendarTaskDTO calendarTaskDTO, User user) {
+        return userTaskRepository.existsByUserIdAndTaskId(user.getId(), calendarTaskDTO.getTaskId());
     }
     @GetMapping("/tasks/{taskId}/users")
     public ResponseEntity<List<Map<Long, String>>> getUsersByTaskId(@PathVariable Long taskId) {
