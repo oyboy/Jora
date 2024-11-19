@@ -35,7 +35,7 @@
             </#list>
         </div>
 
-        <button class="btn btn-info showCommentsButton" data-task-id="${task.id}">Комментарии</button>
+        <button class="btn btn-outline-info showCommentsButton" data-task-id="${task.id}">Комментарии</button>
         <div class="commentsSection" data-task-id="${task.id}" style="display: none">
             <h6 class="mt-2">Комментарии к задаче</h6>
             <div class="commentsList mb-2"></div>

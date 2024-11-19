@@ -26,6 +26,7 @@ public class User implements UserDetails, Serializable {
     private String username;
 
     @Size(min=4, message="Пароль не может быть меньше 4 символов")
+    @ToString.Exclude
     private String password;
     @Transient
     private String confirmPassword;

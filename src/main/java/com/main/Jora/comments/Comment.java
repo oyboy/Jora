@@ -1,18 +1,16 @@
 package com.main.Jora.comments;
 
-import com.fasterxml.jackson.annotation.*;
 import com.main.Jora.models.Task;
 import com.main.Jora.models.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class Comment implements Serializable {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -189,12 +189,14 @@ $(document).ready(function() {
             url: `/projects/${projectHash}/tasks/${taskId}/api/comments/unreadCount`,
         }).then(unreadCount => {
             console.log("Found " + unreadCount + " unread comments in task " + taskId);
-            const button = $(`.button[data-task-id="${taskId}"]`);
+            const button = $(`.showCommentsButton[data-task-id="${taskId}"]`);
 
             if (unreadCount > 0) {
-                button.addClass("new-comment"); // Добавить класс для выделения
+                button.removeClass("btn btn-outline-info");
+                button.addClass("btn btn-info"); // Добавить класс для выделения
             } else {
-                button.removeClass("new-comment");
+                button.removeClass("btn btn-info");
+                button.addClass("btn btn-outline-info");
             }
             return unreadCount;
         }).catch(err => {

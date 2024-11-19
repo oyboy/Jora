@@ -28,7 +28,6 @@ public class CommentService {
     }
 
     public Comment saveComment(CreateCommentDTO createCommentDTO, User user) {
-        log.info("Received commentData: {}", createCommentDTO);
         Task task = taskRepository.findById(createCommentDTO.getTaskId()).orElse(null);
 
         Comment comment = new Comment();
