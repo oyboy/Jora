@@ -70,12 +70,14 @@
             <h5 class="card-title">${userAndTag.user.username}</h5>
             <p class="card-text">${userAndTag.user.email}</p>
             <p class="card-text"><strong>Роль:</strong> ${userAndTag.role}</p>
-            <form action="/projects/${project_hash}/group/change-role" method="post" class="mb-2">
-                <input type="hidden" name="email" value="${userAndTag.user.email}">
-                <input type="hidden" name="_csrf" value="${_csrf.token}">
-                <button type="submit" class="btn btn-secondary" name="action" value="PROMOTE">↑ Повысить роль</button>
-                <button type="submit" class="btn btn-secondary" name="action" value="DEMOTE">↓ Понизить роль</button>
-            </form>
+            <#if currentUserRole.role?string == "ROLE_LEADER">
+                <form action="/projects/${project_hash}/group/change-role" method="post" class="mb-2">
+                    <input type="hidden" name="email" value="${userAndTag.user.email}">
+                    <input type="hidden" name="_csrf" value="${_csrf.token}">
+                    <button type="submit" class="btn btn-secondary" name="action" value="PROMOTE">↑ Повысить роль</button>
+                    <button type="submit" class="btn btn-secondary" name="action" value="DEMOTE">↓ Понизить роль</button>
+                </form>
+            </#if>
             <h6>Теги:</h6>
             <ul class="list-group">
                 <#if userAndTag.tags?has_content>

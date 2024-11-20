@@ -4,10 +4,13 @@ package com.main.Jora.configs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
@@ -33,5 +36,11 @@ public class GlobalExceptionHandler {
         log.error("Upload size Error: " + exc.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE);
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body("Файл слишком большого размера! Максимальный размер: " + exc.getMaxUploadSize());
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ModelAndView handleAccessDeniedException(AccessDeniedException ex, Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("redirect:/error/access-denied-error");
+        return modelAndView;
     }
 }

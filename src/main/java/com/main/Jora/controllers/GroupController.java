@@ -1,6 +1,7 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.Tag;
 import com.main.Jora.models.User;
@@ -12,6 +13,7 @@ import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserRepository;
 import com.main.Jora.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,7 +72,9 @@ public class GroupController {
         return new User();
     }
     @GetMapping
-    public String getGroup(){
+    public String getGroup(@PathVariable("project_hash") String project_hash){
+        Role role = getCurrentUserRole(getUser(), project_hash).getRole();
+        if (role == Role.ROLE_PARTICIPANT) return "redirect:/error/access-denied-error";
         return "group";
     }
     @PostMapping("/tag-add")
