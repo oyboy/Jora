@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: Jora
+  freemarker:
+    expose-request-attributes: true
+  mvc:
+    static-path-pattern: /static/**
+  datasource:
+    generate-unique-name: false
+    url: jdbc:mysql://localhost:3306/joradb
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: joradb
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  cache:
+    redis:
+      time-to-live: 900000 #ttl 15 min
+
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    #org.springframework.messaging: DEBUG
+    #org.springframework.web: DEBUG

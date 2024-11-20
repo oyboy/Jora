@@ -55,7 +55,6 @@ public class GroupController {
         }
         return usersWithTags;
     }
-    //Нужно также добавить текущую сессию для разграничения прав
     @ModelAttribute("currentUserRole")
     public UserProjectRole getCurrentUserRole(@AuthenticationPrincipal User currentUser,
                                               @PathVariable("project_hash") String project_hash){
