@@ -1,0 +1,35 @@
+version: '3'
+services:
+  jora:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    depends_on:
+      - mysql
+      - mongo
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: jdbc:mysql://localhost:3306/joradb
+      MYSQL_USER: gojo_satoru
+      MYSQL_PASSWORD: b6KmxweJz-xtBRlB
+      MYSQL_ROOT_PASSWORD: b6KmxweJz-xtBRlB
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - 6379-6379
