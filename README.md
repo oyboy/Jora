@@ -11,7 +11,7 @@
 Клонируйте репозиторий и перейдите в него:
 
 ```bash
-git clone https://github.com/oyboy/jora.git
+git clone https://github.com/oyboy/Jora.git
 cd jora
 ```
 
