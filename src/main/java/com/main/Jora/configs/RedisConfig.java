@@ -1,7 +1,7 @@
 package com.main.Jora.configs;
 
-import com.main.Jora.models.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 @RequiredArgsConstructor
 @EnableCaching
 public class RedisConfig {
+    @Value("${API_REDIS_HOST:localhost}")
+    private String redisHost;
+
     @Bean
     public RedisTemplate<Long, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<Long, Object> template = new RedisTemplate<>();
@@ -24,7 +27,7 @@ public class RedisConfig {
     }
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("localhost", 6379);
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisHost, 6379);
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 }

@@ -99,8 +99,11 @@ public class UserService {
         return userAvatar;
     }
     private UserAvatar setDefaultAvatar(Long user_id) throws IOException {
-        Path path = Paths.get("src/main/resources/static/images/default_avatar.jpg");
-        byte[] avatarBytes = Files.readAllBytes(path);
+        InputStream inputStream = getClass().getResourceAsStream("/static/images/default_avatar.jpg");
+        if (inputStream == null) {
+            throw new IOException("Default avatar not found");
+        }
+        byte[] avatarBytes = inputStream.readAllBytes();
 
         UserAvatar userAvatar = new UserAvatar();
         userAvatar.setBytes(avatarBytes);

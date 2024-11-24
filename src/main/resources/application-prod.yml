@@ -7,9 +7,9 @@ spring:
     static-path-pattern: /static/**
   datasource:
     generate-unique-name: false
-    url: jdbc:mysql://localhost:3306/joradb
-    username: root
-    password: root
+    url: jdbc:mysql://jora-mysql-db:3306/${MYSQL_DATABASE}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -22,8 +22,7 @@ spring:
           use_query_cache: false
   data:
     mongodb:
-      host: 127.0.0.1
-      port: 27017
+      host: jora-mongo-db
       database: joradb
   servlet:
     multipart:
@@ -34,10 +33,13 @@ spring:
       time-to-live: 900000 #ttl 15 min
 
 server:
+  address: 0.0.0.0
   port: 8081
 
 logging:
   level:
     root: INFO
+    org.mongodb.driver: WARN
+    com.mongodb: WARN
     #org.springframework.messaging: DEBUG
     #org.springframework.web: DEBUG

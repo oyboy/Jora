@@ -61,7 +61,6 @@ public class HomeController {
         return "redirect:/home";
     }
     //Присоединение к проекту
-    //@Valid по полям отсутствует, поэтому созданы собственные исключения
     @PostMapping("/join")
     public String joinToProject(@RequestParam("project_hash") String project_hash,
                                 @AuthenticationPrincipal User user,
@@ -78,6 +77,6 @@ public class HomeController {
             model.addAttribute("userError", "Проект с таким хэшем не найден");
             return "home";
         }
-        return "redirect:/projects/" + project_hash + "/group";
+        return "redirect:/home";
     }
 }

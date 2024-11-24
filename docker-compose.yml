@@ -1,4 +1,3 @@
-version: '3'
 services:
   jora:
     build:
@@ -6,6 +5,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8081:8081
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://jora-mysql-db:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      API_REDIS_HOST: jora-redis-db
+      SPRING_PROFILES_ACTIVE: prod
     depends_on:
       - mysql
       - mongo
@@ -13,23 +20,28 @@ services:
 
   mysql:
     image: mysql:8.0
+    container_name: jora-mysql-db
     restart: always
-    ports:
-      - 3306:3306
     environment:
-      MYSQL_DATABASE: jdbc:mysql://localhost:3306/joradb
-      MYSQL_USER: gojo_satoru
-      MYSQL_PASSWORD: b6KmxweJz-xtBRlB
-      MYSQL_ROOT_PASSWORD: b6KmxweJz-xtBRlB
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   mongo:
     image: mongo:latest
+    container_name: jora-mongo-db
     restart: always
-    ports:
-      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
 
   redis:
     image: redis:alpine
+    container_name: jora-redis-db
     restart: always
-    ports:
-      - 6379-6379
+    volumes:
+      - ./redisdata:/data
+
+volumes:
+  mongo_data:
+  mysql_data:
