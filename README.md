@@ -12,7 +12,7 @@
 
 ```bash
 git clone https://github.com/oyboy/Jora.git
-cd jora
+cd Jora
 ```
 
 ### Шаг 2
@@ -27,9 +27,8 @@ cp .env.sample .env
 copy .env.sample .env
 ```
 
-Откройте файл .env и измените значения переменных на свои собственные:
+При желании откройте файл .env и измените значения переменных на свои собственные:
 ```ini
-MYSQL_DATABASE=your_database_name # Название вашей базы данных
 MYSQL_ROOT_PASSWORD=your_root_password # Пароль для пользователя root
 DATASOURCE_USERNAME=your_username # Имя пользователя для доступа к приложению
 DATASOURCE_PASSWORD=your_password # Пароль для доступа к приложению

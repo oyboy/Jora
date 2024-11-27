@@ -7,7 +7,7 @@ spring:
     static-path-pattern: /static/**
   datasource:
     generate-unique-name: false
-    url: jdbc:mysql://jora-mysql-db:3306/${MYSQL_DATABASE}
+    url: jdbc:mysql://jora-mysql-db:3306/joradb
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver

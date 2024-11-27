@@ -2,6 +2,7 @@ HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 logs/
+redisdata/
 .env
 src/main/resources/application-dev.yml
 !**/src/main/**/target/
