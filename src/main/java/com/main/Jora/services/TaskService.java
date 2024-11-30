@@ -8,6 +8,7 @@ import com.main.Jora.notifications.NotificationService;
 import com.main.Jora.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class TaskService {
     @Autowired
     TagRepository tagRepository;
     @Autowired
+    @Lazy
     NotificationService notificationService;
     public void addTask(Task task, String project_hash, User user){
         Long project_id = projectRepository.findIdByHash(project_hash);
@@ -46,11 +48,12 @@ public class TaskService {
         log.info("Saving task: {}", task);
         taskRepository.save(task);
     }
-    public void addUserToTask(Task task, User user) throws CustomException.UserAlreadyJoinedException{
-        if (userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId())) {
-            log.warn("User {} is already a member of task {}", user.getId(), task.getId());
-            throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к задаче"); // Или выбрасываем исключение, если нужно
+    public void addUserToTask(Long task_id, User user) throws CustomException.UserAlreadyJoinedException{
+        if (userTaskRepository.existsByUserIdAndTaskId(user.getId(), task_id)) {
+            log.warn("User {} is already a member of task {}", user.getId(), task_id);
+            throw new CustomException.UserAlreadyJoinedException("Пользователь уже добавлен к задаче");
         }
+        Task task = taskRepository.findById(task_id).orElse(null);
         UserTask userTask = new UserTask();
         userTask.setUser(user);
         userTask.setTask(task);
@@ -129,7 +132,6 @@ public class TaskService {
         if (userTaskRepository.isModeratorAssignedToTask(task_id)) throw new CustomException.UserAlreadyJoinedException("");
         List<Tag> task_tags = tagRepository.findTagsByTaskId(task_id);
         Long project_id = taskRepository.findProjectIdByTaskId(task_id);
-        log.warn("PRojectID? : "+ project_id);
         List<User> moderators = userProjectRoleReposirory.findModeratorsByProjectId(project_id);
 
         User bestModerator = null;
@@ -148,12 +150,12 @@ public class TaskService {
         if (bestModerator == null) throw new CustomException.UserNotFoundException("");
         log.info("Найден модер {} с коэффициентом {}", bestModerator, maxScore);
         log.info("Попытка отправить сообщение");
-        notificationService.sendNotificationTo(bestModerator, "Запрос о помощи",
+        notificationService.sendNotificationTo(bestModerator, "Новое исполнение",
                 generateMessage(task_id), createLinkToTasks(project_id));
     }
     private String generateMessage(Long task_id){
         Task task = taskRepository.findById(task_id).orElse(null);
-        return "Пользователь запросил помощь с задачей " +
+        return "Вы назначены на задачу: " +
                 task_id + "/" + task.getName();
     }
     private String createLinkToTasks(Long project_id){

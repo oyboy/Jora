@@ -123,8 +123,8 @@ public class TaskController {
     private boolean isAuthorizedToEditTask(Task task, User user, Role role) {
         return userTaskRepository.existsByUserIdAndTaskId(user.getId(), task.getId()) || role == Role.ROLE_MODERATOR;
     }
-    @PostMapping("/edit")
-    public String editTask(@RequestParam("task_id") Long task_id,
+    @PostMapping("/edit/{task_id}")
+    public String editTask(@PathVariable("task_id") Long task_id,
                            @Valid @ModelAttribute Task form,
                            Errors errors,
                            Model model){
@@ -184,7 +184,7 @@ public class TaskController {
                              @PathVariable("project_hash") String project_hash,
                              Model model){
         try{
-            taskService.addUserToTask(taskService.getTaskById(task_id), user);
+            taskService.addUserToTask(task_id, user);
         } catch (CustomException.UserAlreadyJoinedException ex){
             Task task = taskService.getTaskById(task_id);
             model.addAttribute("task", task);
@@ -201,7 +201,7 @@ public class TaskController {
             model.addAttribute("task", task);
             taskService.sendHelp(task_id);
         } catch (CustomException.UserNotFoundException ex){
-            model.addAttribute("moderNotFound", "Модератор не найден, вам никто не поможет");
+            model.addAttribute("moderNotFound", "Модератор не найден, никто не может взять задачу");
             return "task-edit";
         } catch (CustomException.UserAlreadyJoinedException ex){
             model.addAttribute("moderNotFound", "Модератор уже привязан к этой задаче");
@@ -210,7 +210,7 @@ public class TaskController {
             model.addAttribute("moderNotFound", "Запрос уже был отправлен");
             return "task-edit";
         }
-        model.addAttribute("notificationResult", "Просьба отправлена");
+        model.addAttribute("notificationResult", "Запрос отправлен");
         return "task-edit";
     }
 }

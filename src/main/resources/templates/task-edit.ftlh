@@ -3,7 +3,7 @@
 <h1 class="my-4" style="margin-left: 45px;">Редактирование задачи</h1>
 
 <div class="container">
-    <#if currentRole != "ROLE_PARTICIPANT">
+    <#if currentRole = "ROLE_MODERATOR">
         <form action="/projects/${project_hash}/tasks/edit/join" method="post" class="mb-4">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="hidden" name="task_id" value="${task.id}">
@@ -16,7 +16,7 @@
         <form action="/projects/${project_hash}/tasks/edit/help" method="post" class="mb-4">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="hidden" name="task_id" value="${task.id}">
-            <button type="submit" class="btn btn-warning">Запросить помощь</button>
+            <button type="submit" class="btn btn-warning">Назначить другого исполнителя</button>
         </form>
         <#if moderNotFound??>
             <div class="alert alert-danger">${moderNotFound}</div>
@@ -84,7 +84,9 @@
         </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}">
+<#--
         <input type="hidden" name="task_id" value="${task.id}">
+-->
         <button type="submit" class="btn btn-success">Сохранить</button>
     </form>
 </div>

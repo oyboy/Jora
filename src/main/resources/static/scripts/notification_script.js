@@ -44,6 +44,7 @@ $(document).ready(function() {
     // Обработчик клика на уведомление для пометки как прочитанное
     $(document).on('click', '#notification-list li', function() {
         const notificationId = $(this).data('id');
+        console.log("Отправляю запрос на пометку уведомления ID:", notificationId);
         $.ajax({
             url: `/api/notifications/read/${notificationId}`,
             type: 'POST',
@@ -58,7 +59,9 @@ $(document).ready(function() {
                 }
             }.bind(this),
             error: function(xhr, status, error) {
-                console.error("Ошибка при пометке уведомления как прочитанное:", error);
+                console.error(status);
+                console.error(error);
+                console.error("Ошибка при пометке уведомления как прочитанное:", xhr.statusText, xhr.responseText);
             }
         });
     });

@@ -1,5 +1,6 @@
 package com.main.Jora.notifications;
 
+import com.main.Jora.models.Project;
 import jakarta.persistence.*;
 import lombok.Data;
 

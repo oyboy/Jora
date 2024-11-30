@@ -45,14 +45,6 @@ public class Project {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "project_notification",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "notification_id")
-    )
-    private List<Notification> notifications = new ArrayList<>();
-
     @NotNull
     @Column(unique = true)
     private String hash = this.generateHash();
