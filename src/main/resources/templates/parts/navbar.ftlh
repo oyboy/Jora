@@ -15,7 +15,7 @@
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                <#if user?? && user.email??>
+                <#if user?? && user.email?? && user.id??>
                     <div class="me-5">
                         <#include "notification.ftlh">
                     </div>
