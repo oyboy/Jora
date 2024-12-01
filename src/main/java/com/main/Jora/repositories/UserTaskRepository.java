@@ -30,4 +30,6 @@ public interface UserTaskRepository extends CrudRepository<UserTask, Long> {
             "ON ut.user.id = u.id " +
             "WHERE ut.task.id = :taskId")
     List<User> getUsersByTaskId(@Param("taskId") Long taskId);
+
+    List<UserTask> findAllByTaskId(Long taskId);
 }

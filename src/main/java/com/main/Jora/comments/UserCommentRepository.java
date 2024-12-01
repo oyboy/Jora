@@ -49,4 +49,5 @@ public interface UserCommentRepository extends CrudRepository<UserCommentDTO, Lo
 """, nativeQuery = true) //nativeQuery - определяет, что запрос написан на нативном SQL, поскольку HQL вызывал ряд ошибок
     void deleteReadComments();
 
+    List<UserCommentDTO> findByTaskId(Long taskId);
 }

@@ -1,30 +1,47 @@
 <#import "parts/common.ftlh" as c>
 <@c.page>
-<h1 class="my-4" style="margin-left: 45px;">Редактирование задачи</h1>
+<h1 class="mb-4" style="margin-left: 45px;">Редактирование задачи</h1>
 
 <div class="container">
-    <#if currentRole = "ROLE_MODERATOR">
-        <form action="/projects/${project_hash}/tasks/edit/join" method="post" class="mb-4">
+    <div class="button-container d-flex justify-content-between align-items-center mb-4">
+        <#if currentRole == "ROLE_MODERATOR">
+            <form action="/projects/${project_hash}/tasks/edit/join" method="post" class="me-2">
+                <input type="hidden" name="_csrf" value="${_csrf.token}">
+                <input type="hidden" name="task_id" value="${task.id}">
+                <button type="submit" class="btn btn-outline-secondary">Присоединиться</button>
+            </form>
+            <#if userError??>
+                <div class="alert alert-danger">${userError}</div>
+            </#if>
+        <#else>
+            <form action="/projects/${project_hash}/tasks/edit/help" method="post" class="me-2">
+                <input type="hidden" name="_csrf" value="${_csrf.token}">
+                <input type="hidden" name="task_id" value="${task.id}">
+                <button type="submit" class="btn btn-warning">Назначить другого исполнителя</button>
+            </form>
+            <#if moderNotFound??>
+                <div class="alert alert-danger">${moderNotFound}</div>
+            </#if>
+            <#if notificationResult??>
+                <div class="alert alert-info">${notificationResult}</div>
+            </#if>
+        </#if>
+
+        <form action="/projects/${project_hash}/tasks/delete" method="post" class="mb-0" onsubmit="return confirmDelete();">
             <input type="hidden" name="_csrf" value="${_csrf.token}">
             <input type="hidden" name="task_id" value="${task.id}">
-            <button type="submit" class="btn btn-outline-secondary">Присоединиться</button>
+            <button type="submit" class="btn btn-danger">Удалить задачу</button>
+            <#if taskDeleteException??>
+                <div class="alert alert-danger">${taskDeleteException}</div>
+            </#if>
         </form>
-        <#if userError??>
-            <div class="alert alert-danger">${userError}</div>
-        </#if>
-    <#else>
-        <form action="/projects/${project_hash}/tasks/edit/help" method="post" class="mb-4">
-            <input type="hidden" name="_csrf" value="${_csrf.token}">
-            <input type="hidden" name="task_id" value="${task.id}">
-            <button type="submit" class="btn btn-warning">Назначить другого исполнителя</button>
-        </form>
-        <#if moderNotFound??>
-            <div class="alert alert-danger">${moderNotFound}</div>
-        </#if>
-        <#if notificationResult??>
-            <div class="alert alert-info">${notificationResult}</div>
-        </#if>
-    </#if>
+        <script>
+            function confirmDelete() {
+                return confirm("Вы уверены, что хотите удалить эту задачу?");
+            }
+        </script>
+    </div>
+
 
     <form action="/projects/${project_hash}/tasks/edit" method="post">
         <div class="mb-3">
@@ -84,9 +101,6 @@
         </div>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}">
-<#--
-        <input type="hidden" name="task_id" value="${task.id}">
--->
         <button type="submit" class="btn btn-success">Сохранить</button>
     </form>
 </div>

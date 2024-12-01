@@ -76,6 +76,23 @@ public class TaskController {
         }
         return new User();
     }
+    @ModelAttribute(name = "tagsForProject")
+    public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        return tagRepository.findTagsByProjectId(project_id);
+    }
+    @ModelAttribute(name = "tasksAndTags")
+    public List<TaskTagsDTO> getTasksWithTags(@PathVariable("project_hash") String project_hash) {
+        Long project_id = projectRepository.findIdByHash(project_hash);
+        Iterable<Task> tasks = taskService.findAllTasks(project_id);
+
+        List<TaskTagsDTO> tasksWithTags = new ArrayList<>();
+        for (Task task : tasks) {
+            List<Tag> tags = task.getTags();
+            tasksWithTags.add(new TaskTagsDTO(task, tags));
+        }
+        return tasksWithTags;
+    }
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
         Long project_id = projectRepository.findIdByHash(project_hash);
@@ -140,23 +157,6 @@ public class TaskController {
         taskService.changeTaskFieldsAndSave(task_id, form);
         return "redirect:/projects/{project_hash}/tasks";
     }
-    @ModelAttribute(name = "tagsForProject")
-    public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
-        return tagRepository.findTagsByProjectId(project_id);
-    }
-    @ModelAttribute(name = "tasksAndTags")
-    public List<TaskTagsDTO> getTasksWithTags(@PathVariable("project_hash") String project_hash) {
-        Long project_id = projectRepository.findIdByHash(project_hash);
-        Iterable<Task> tasks = taskService.findAllTasks(project_id);
-
-        List<TaskTagsDTO> tasksWithTags = new ArrayList<>();
-        for (Task task : tasks) {
-            List<Tag> tags = task.getTags();
-            tasksWithTags.add(new TaskTagsDTO(task, tags));
-        }
-        return tasksWithTags;
-    }
     @PostMapping("/tag-set")
     public String setTag(@RequestParam(value = "taskId", required = false) Long taskId,
                          @RequestParam("tagName") String tagName,
@@ -212,5 +212,16 @@ public class TaskController {
         }
         model.addAttribute("notificationResult", "Запрос отправлен");
         return "task-edit";
+    }
+    @PostMapping("/delete")
+    public String deleteTask(@RequestParam("task_id") Long task_id,
+                             Model model){
+        try{
+            taskService.deleteTaskByTaskId(task_id);
+        } catch (CustomException.ObjectExistsException co){
+            model.addAttribute("taskDeleteException", "Задача не может быть удалена");
+            return "task-edit";
+        }
+        return "redirect:/projects/{project_hash}/tasks";
     }
 }

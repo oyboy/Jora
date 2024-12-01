@@ -82,7 +82,10 @@ public class GroupService {
     }
     public void setTagToUser(String email, String project_hash, String tagName){
         User user = userRepository.findByEmail(email);
-        Tag tag = tagRepository.findTagByTagName(tagName);
+
+        Tag tag = tagRepository.findTagByTagNameAndProjectId(tagName,
+                projectRepository.findIdByHash(project_hash));
+
         if (user.getTags().contains(tag)){
             log.info("removing tag {} from user {}", tag, user);
             user.getTags().remove(tag);

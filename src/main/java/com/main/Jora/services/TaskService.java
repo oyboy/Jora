@@ -1,6 +1,10 @@
 package com.main.Jora.services;
 
 import com.main.Jora.calendar.CalendarTaskDTO;
+import com.main.Jora.comments.Comment;
+import com.main.Jora.comments.CommentRepository;
+import com.main.Jora.comments.UserCommentDTO;
+import com.main.Jora.comments.UserCommentRepository;
 import com.main.Jora.configs.CustomException;
 import com.main.Jora.enums.Status;
 import com.main.Jora.models.*;
@@ -10,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +36,11 @@ public class TaskService {
     @Autowired
     @Lazy
     NotificationService notificationService;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private UserCommentRepository userCommentRepository;
+
     public void addTask(Task task, String project_hash, User user){
         Long project_id = projectRepository.findIdByHash(project_hash);
         Project projectFromDb = projectRepository.findById(project_id).orElse(null);
@@ -115,7 +125,7 @@ public class TaskService {
         if (!taskRepository.existsByProjectIdAndId(projectId, task.getId()))
             throw new CustomException.ObjectExistsException("");
 
-        Tag tag = tagRepository.findTagByTagName(tagName);
+        Tag tag = tagRepository.findTagByTagNameAndProjectId(tagName, projectId);
         if (!task.getTags().contains(tag)){
             log.info("Setting tag {} to task {}", tag, task);
             task.getTags().add(tag);
@@ -211,5 +221,36 @@ public class TaskService {
         log.info("Changing status: {}", task);
         task.setStatus(taskForm.getStatus());
         taskRepository.save(task);
+    }
+    @Transactional
+    public void deleteTaskByTaskId(Long taskId) throws CustomException.ObjectExistsException{
+        if (taskId == null || taskRepository.findById(taskId).isEmpty()) throw new CustomException.ObjectExistsException("");
+
+        Task task = getTaskById(taskId);
+        /*Удаление связи пользователей с задачей*/
+        log.info("Deleting user-tasks");
+        task.getUserTasks().clear();
+        log.info("Deleted user-tasks");
+
+        /*Удаление комментариев и связей с пользователями*/
+        log.info("Deleting user-comment dtos");
+        List<UserCommentDTO> userCommentDTOS = userCommentRepository.findByTaskId(taskId);
+        userCommentRepository.deleteAll(userCommentDTOS);
+        log.info("Deleted user-comment dtos");
+
+        log.info("Deleting comments");
+        List<Comment> comments = commentRepository.findAllByTaskId(taskId);
+        commentRepository.deleteAll(comments);
+        log.info("Deleted comments");
+
+        /*Очистка тегов*/
+        log.info("Deleting tags");
+        task.getTags().clear();
+        log.info("Deleted tags");
+
+        log.info("Deleting task {} from project", taskId);
+        task.getProject().getTaskList().remove(task);
+        taskRepository.deleteById(taskId);
+        log.info("Deleted task {}", taskId);
     }
 }

@@ -1,6 +1,5 @@
 package com.main.Jora.models;
 
-import com.main.Jora.notifications.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
