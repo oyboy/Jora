@@ -1,8 +1,12 @@
 package com.main.Jora.controllers;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.enums.Role;
 import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
+import com.main.Jora.models.UserProjectRole;
+import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.services.ProjectService;
 import com.main.Jora.services.UserService;
 import jakarta.validation.Valid;
@@ -11,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +29,10 @@ public class HomeController {
     ProjectService projectService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private UserProjectRoleReposirory userProjectRoleReposirory;
 
     //Данные о текущем пользователе
     @ModelAttribute(name = "user")
@@ -75,6 +84,21 @@ public class HomeController {
             return "home";
         } catch (CustomException.ObjectExistsException ex){
             model.addAttribute("userError", "Проект с таким хэшем не найден");
+            return "home";
+        }
+        return "redirect:/home";
+    }
+    @PostMapping("/delete")
+    public String deleteProject(@RequestParam("projectId") Long projectId,
+                                @AuthenticationPrincipal User user,
+                                Model model){
+        Project project = projectRepository.findById(projectId).orElse(null);
+        Role role = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project).getRole();
+        if (role != Role.ROLE_LEADER) return "redirect:/error/access-denied-error";
+        try{
+            projectService.deleteProject(projectId);
+        } catch (CustomException.ObjectExistsException co){
+            model.addAttribute("projectExistsException", "Проект не найден");
             return "home";
         }
         return "redirect:/home";

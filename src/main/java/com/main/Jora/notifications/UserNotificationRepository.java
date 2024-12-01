@@ -1,5 +1,6 @@
 package com.main.Jora.notifications;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,7 @@ public interface UserNotificationRepository extends CrudRepository<UserNotificat
             "WHERE un.user.id = :userId AND n.message = :message")
     boolean existsByUserIdAndMessage(@Param("userId") Long userId,
                                           @Param("message") String message);
+    @Modifying
+    @Query("DELETE FROM UserNotification un WHERE un.notification.id IN :notificationIds")
+    void deleteAllByNotificationIds(@Param("notificationIds") List<Long> notificationIds);
 }

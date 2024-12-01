@@ -1,9 +1,7 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import jakarta.persistence.Id;
 import lombok.Data;
-import jakarta.persistence.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

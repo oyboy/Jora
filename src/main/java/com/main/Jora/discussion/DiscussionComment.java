@@ -1,4 +1,4 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import com.main.Jora.models.dto.UserAvatarDTO;
 import jakarta.persistence.*;

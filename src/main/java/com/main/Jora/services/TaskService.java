@@ -230,23 +230,19 @@ public class TaskService {
         /*Удаление связи пользователей с задачей*/
         log.info("Deleting user-tasks");
         task.getUserTasks().clear();
-        log.info("Deleted user-tasks");
 
         /*Удаление комментариев и связей с пользователями*/
         log.info("Deleting user-comment dtos");
         List<UserCommentDTO> userCommentDTOS = userCommentRepository.findByTaskId(taskId);
         userCommentRepository.deleteAll(userCommentDTOS);
-        log.info("Deleted user-comment dtos");
 
         log.info("Deleting comments");
         List<Comment> comments = commentRepository.findAllByTaskId(taskId);
         commentRepository.deleteAll(comments);
-        log.info("Deleted comments");
 
         /*Очистка тегов*/
         log.info("Deleting tags");
         task.getTags().clear();
-        log.info("Deleted tags");
 
         log.info("Deleting task {} from project", taskId);
         task.getProject().getTaskList().remove(task);

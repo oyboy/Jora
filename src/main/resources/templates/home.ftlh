@@ -35,10 +35,23 @@
                     </h2>
                     <p class="card-text" style="white-space: pre-wrap;">${project.description}</p>
                     <i class="text-muted">${project.createdAt?date}</i>
-                    <div class="mt-2">
-                        <a href="/projects/${project.hash}/tasks" class="btn btn-info btn-sm">Перейти к задачам</a>
-                        <a href="/projects/${project.hash}/group" class="btn btn-secondary btn-sm">В группу</a>
-                        <a href="/projects/${project.hash}/discussion" class="btn btn-warning btn-sm">В обсуждение</a>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div>
+                            <a href="/projects/${project.hash}/tasks" class="btn btn-info btn-sm">Перейти к задачам</a>
+                            <a href="/projects/${project.hash}/group" class="btn btn-secondary btn-sm">В группу</a>
+                            <a href="/projects/${project.hash}/discussion" class="btn btn-warning btn-sm">В обсуждение</a>
+                        </div>
+                        <form action="/home/delete" method="post" class="d-inline" style="justify-content: right">
+                            <i class="bi bi-trash text-danger"
+                               style="font-size: 1.5rem;
+                               cursor: pointer;"
+                               onclick="event.preventDefault();
+                               if(confirm('Вы уверены, что хотите удалить этот проект?'))
+                               { this.closest('form').submit(); }">
+                            </i>
+                            <input type="hidden" name="projectId" value="${project.id}">
+                            <input type="hidden" name="_csrf" value="${_csrf.token}">
+                        </form>
                     </div>
                 </div>
             </div>
@@ -53,7 +66,7 @@
         function copyLink(hash, element) {
             navigator.clipboard.writeText(hash).then(() => {
                 $(element).popover('show');
-                console.log("copued");
+                console.log("copied");
                 setTimeout(() => {
                     $(element).popover('hide');
                 }, 1500);

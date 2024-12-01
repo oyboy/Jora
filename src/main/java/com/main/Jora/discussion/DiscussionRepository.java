@@ -1,4 +1,4 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

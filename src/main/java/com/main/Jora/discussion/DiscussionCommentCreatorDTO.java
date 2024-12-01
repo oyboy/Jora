@@ -1,4 +1,4 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import lombok.Data;
 

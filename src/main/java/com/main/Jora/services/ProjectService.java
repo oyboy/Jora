@@ -2,15 +2,20 @@ package com.main.Jora.services;
 
 import com.main.Jora.configs.CustomException;
 import com.main.Jora.enums.Role;
-import com.main.Jora.models.Project;
-import com.main.Jora.models.User;
-import com.main.Jora.models.UserProjectRole;
+import com.main.Jora.models.*;
+import com.main.Jora.notifications.Notification;
+import com.main.Jora.notifications.NotificationRepository;
+import com.main.Jora.notifications.ProjectNotificationRepository;
+import com.main.Jora.notifications.UserNotificationRepository;
 import com.main.Jora.repositories.ProjectRepository;
+import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,11 +24,19 @@ public class ProjectService {
     @Autowired
     ProjectRepository projectRepository;
     @Autowired
-    UserService userService;
-    @Autowired
     UserProjectRoleReposirory userProjectRoleReposirory;
+    @Autowired
+    private ProjectNotificationRepository projectNotificationRepository;
+    @Autowired
+    private TaskService taskService;
+    @Autowired
+    private TagRepository tagRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
+    private UserNotificationRepository userNotificationRepository;
 
-    public void saveProject(Project project, User user){
+    public void saveProject(Project project, User user) {
         //Избежание ситуации, когда проект с данным хешем уже существует
         while (projectRepository.findIdByHash(project.getHash()) != null) project.setHash(project.generateHash());
 
@@ -42,11 +55,13 @@ public class ProjectService {
         log.info("Saving project: {}", project);
         userProjectRoleReposirory.save(userProjectRole);
     }
-    public List<Project> getProjectsForUser(User user){
+
+    public List<Project> getProjectsForUser(User user) {
         return userProjectRoleReposirory.findProjectsByUserId(user.getId());
     }
+
     public void addUserToProject(String project_hash, User user) throws CustomException.UserAlreadyJoinedException,
-            CustomException.UserBannedException, CustomException.ObjectExistsException{
+            CustomException.UserBannedException, CustomException.ObjectExistsException {
         Project project = projectRepository.findProjectByHash(project_hash);
         if (project == null) throw new CustomException.ObjectExistsException("Проекта не существует");
 
@@ -67,5 +82,42 @@ public class ProjectService {
         //Сохраняем её
         log.info("Saving relation: {}", userProjectRole);
         userProjectRoleReposirory.save(userProjectRole);
+    }
+
+    @Transactional
+    public void deleteProject(Long projectId) throws CustomException.ObjectExistsException {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project == null) throw new CustomException.ObjectExistsException("");
+        log.info("------------------------");
+        log.info("Removing user-project-role");
+        project.getUserProjectRoles().clear();
+
+        log.info("Removing tags");
+        List<Tag> tags = new ArrayList<>(project.getTags());
+        for (Tag tag : tags) {
+            tag.getUsers().forEach(user -> user.getTags().clear());
+            tagRepository.deleteById(tag.getId());
+        }
+        project.getTags().clear();
+
+        log.info("Removing notifications");
+        List<Long> notif_ids = projectNotificationRepository.getNotificationIdsByProjectId(projectId);
+        projectNotificationRepository.deleteAllByProjectId(projectId);
+        userNotificationRepository.deleteAllByNotificationIds(notif_ids);
+        notificationRepository.deleteAllById(notif_ids);
+
+        log.info("Removing tasks");
+        List<Task> tasks = new ArrayList<>(project.getTaskList());
+        for (Task task : tasks) {
+            log.info("---");
+            taskService.deleteTaskByTaskId(task.getId());
+            log.info("---");
+        }
+        project.getTaskList().clear();
+
+        log.info("Removing project");
+        projectRepository.delete(project);
+        log.info("Project removed");
+        log.info("------------------------");
     }
 }

@@ -1,9 +1,7 @@
-package com.main.Jora.duscussion;
+package com.main.Jora.discussion;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
