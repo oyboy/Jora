@@ -111,13 +111,15 @@ public class ProjectService {
         notificationRepository.deleteAllById(notif_ids);
 
         log.info("Removing tasks");
-        List<Task> tasks = new ArrayList<>(project.getTaskList());
-        for (Task task : tasks) {
-            log.info("---");
-            taskService.deleteTaskByTaskId(task.getId());
-            log.info("---");
+        List<Long> taskIds = project.getTaskList().stream()
+                .map(Task::getId)
+                .toList();
+        try{
+            taskService.deleteTasksByIds(taskIds);
+            project.getTaskList().clear();
+        } catch (CustomException.ObjectExistsException co) {
+            log.info("Tasks not found");
         }
-        project.getTaskList().clear();
 
         log.info("Removing discussion");
         String projectHash = project.getHash();

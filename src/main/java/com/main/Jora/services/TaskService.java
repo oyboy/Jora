@@ -223,30 +223,28 @@ public class TaskService {
         taskRepository.save(task);
     }
     @Transactional
-    public void deleteTaskByTaskId(Long taskId) throws CustomException.ObjectExistsException{
-        if (taskId == null || taskRepository.findById(taskId).isEmpty()) throw new CustomException.ObjectExistsException("");
+    public void deleteTasksByIds(List<Long> taskIds) throws CustomException.ObjectExistsException{
+        if (taskIds == null || taskIds.isEmpty()) throw new CustomException.ObjectExistsException("");
 
-        Task task = getTaskById(taskId);
-        /*Удаление связи пользователей с задачей*/
-        log.info("Deleting user-tasks");
-        task.getUserTasks().clear();
-
-        /*Удаление комментариев и связей с пользователями*/
         log.info("Deleting user-comment dtos");
-        List<UserCommentDTO> userCommentDTOS = userCommentRepository.findByTaskId(taskId);
-        userCommentRepository.deleteAll(userCommentDTOS);
+        userCommentRepository.deleteAllByTaskIds(taskIds);
 
         log.info("Deleting comments");
-        List<Comment> comments = commentRepository.findAllByTaskId(taskId);
-        commentRepository.deleteAll(comments);
+        commentRepository.deleteAllByTaskIds(taskIds);
 
-        /*Очистка тегов*/
-        log.info("Deleting tags");
-        task.getTags().clear();
+        Iterable<Task> tasks = taskRepository.findAllById(taskIds);
+        tasks.forEach(task -> {
+            log.info("Deleting user-tasks");
+            task.getUserTasks().clear();
 
-        log.info("Deleting task {} from project", taskId);
-        task.getProject().getTaskList().remove(task);
-        taskRepository.deleteById(taskId);
-        log.info("Deleted task {}", taskId);
+            log.info("Deleting tags");
+            task.getTags().clear();
+
+            log.info("Deleting task {} from project", task.getId());
+            task.getProject().getTaskList().remove(task);
+        });
+
+        taskRepository.deleteAll(tasks);
+        log.info("Tasks deleted");
     }
 }

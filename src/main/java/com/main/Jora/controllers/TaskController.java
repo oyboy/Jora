@@ -4,7 +4,6 @@ import com.main.Jora.configs.CustomException;
 import com.main.Jora.enums.Role;
 import com.main.Jora.models.*;
 import com.main.Jora.models.dto.TaskTagsDTO;
-import com.main.Jora.models.dto.UserTagsDTO;
 import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -217,7 +217,7 @@ public class TaskController {
     public String deleteTask(@RequestParam("task_id") Long task_id,
                              Model model){
         try{
-            taskService.deleteTaskByTaskId(task_id);
+            taskService.deleteTasksByIds(Arrays.asList(task_id));
         } catch (CustomException.ObjectExistsException co){
             model.addAttribute("taskDeleteException", "Задача не может быть удалена");
             return "task-edit";
