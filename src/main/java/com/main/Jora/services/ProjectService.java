@@ -1,9 +1,9 @@
 package com.main.Jora.services;
 
 import com.main.Jora.configs.CustomException;
+import com.main.Jora.discussion.*;
 import com.main.Jora.enums.Role;
 import com.main.Jora.models.*;
-import com.main.Jora.notifications.Notification;
 import com.main.Jora.notifications.NotificationRepository;
 import com.main.Jora.notifications.ProjectNotificationRepository;
 import com.main.Jora.notifications.UserNotificationRepository;
@@ -35,6 +35,10 @@ public class ProjectService {
     private NotificationRepository notificationRepository;
     @Autowired
     private UserNotificationRepository userNotificationRepository;
+    @Autowired
+    private DiscussionRepository discussionRepository;
+    @Autowired
+    private DiscussionService discussionService;
 
     public void saveProject(Project project, User user) {
         //Избежание ситуации, когда проект с данным хешем уже существует
@@ -114,6 +118,18 @@ public class ProjectService {
             log.info("---");
         }
         project.getTaskList().clear();
+
+        log.info("Removing discussion");
+        String projectHash = project.getHash();
+        List<DiscussionComment> comments = discussionRepository.getDiscussionCommentsByProjectHash(projectHash);
+        List<String> attachmentIds = comments.stream()
+                .flatMap(comment -> comment.getAttachments().stream()
+                .map(FileAttachment::getId))
+                .toList();
+        discussionRepository.deleteByProjectHash(projectHash);
+        for (String id : attachmentIds){
+            discussionService.deleteAttachmentById(id);
+        }
 
         log.info("Removing project");
         projectRepository.delete(project);

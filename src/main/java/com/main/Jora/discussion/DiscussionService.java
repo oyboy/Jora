@@ -79,4 +79,7 @@ public class DiscussionService {
         }
         return null;
     }
+    public void deleteAttachmentById(String id){
+        gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
+    }
 }

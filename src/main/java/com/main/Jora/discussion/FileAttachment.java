@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public class FileAttachment {
     @Id
     private String id;
-    private String discussionCommentId;
     private String fileName;
     private byte[] bytes;
     private LocalDateTime uploadedAt;
@@ -21,4 +20,3 @@ public class FileAttachment {
         );
     }
 }
-
