@@ -51,7 +51,6 @@ public class CommentService {
     }
     //Отображаются только те пользователи, которые привязаны к задаче
     public void saveUnreadComments(Comment savedComment, User currentUser){
-        log.info("Saving unread comments");
         List<User> usersForTask = userTaskRepository.getUsersByTaskId(savedComment.getTask().getId());
         for (User u : usersForTask){
             if (u.equals(currentUser)) continue; //Для отправителя не нужно сохранять непрочитанное сообщение

@@ -38,8 +38,15 @@
     </appender>
 
     <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>level</level>
+                <thread>thread</thread>
+                <logger>logger</logger>
+                <message>message</message>
+                <mdc>mdc</mdc>
+            </fieldNames>
         </encoder>
         <topic>logs</topic>
         <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy" />
