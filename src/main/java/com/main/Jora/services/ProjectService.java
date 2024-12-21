@@ -12,6 +12,9 @@ import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,7 @@ public class ProjectService {
     @Autowired
     private ProjectNotificationRepository projectNotificationRepository;
     @Autowired
+    @Lazy
     private TaskService taskService;
     @Autowired
     private TagRepository tagRepository;
@@ -40,6 +44,7 @@ public class ProjectService {
     @Autowired
     private DiscussionService discussionService;
 
+    @CachePut(value = "project", key = "#project.getHash()")
     public void saveProject(Project project, User user) {
         //Избежание ситуации, когда проект с данным хешем уже существует
         while (projectRepository.findIdByHash(project.getHash()) != null) project.setHash(project.generateHash());
@@ -52,7 +57,7 @@ public class ProjectService {
         userProjectRole.setRole(Role.ROLE_LEADER);
 
         project.getUserProjectRoles().add(userProjectRole);
-        user.getUserProjectRoles().add(userProjectRole); //Думаю, это лишнее, если не вызывается нужный репозиторий
+        user.getUserProjectRoles().add(userProjectRole);
 
         //Сохранение
         projectRepository.save(project);
@@ -62,6 +67,14 @@ public class ProjectService {
 
     public List<Project> getProjectsForUser(User user) {
         return userProjectRoleReposirory.findProjectsByUserId(user.getId());
+    }
+    //@Cacheable(value = "project", key = "#hash")
+    public Project findProjectByHash(String hash) {
+        return projectRepository.findProjectByHash(hash);
+    }
+    @Cacheable(value = "project_id", key = "#hash")
+    public Long findIdByHash(String hash) {
+        return projectRepository.findIdByHash(hash);
     }
 
     public void addUserToProject(String project_hash, User user) throws CustomException.UserAlreadyJoinedException,

@@ -92,8 +92,7 @@ public class HomeController {
     public String deleteProject(@RequestParam("projectId") Long projectId,
                                 @AuthenticationPrincipal User user,
                                 Model model){
-        Project project = projectRepository.findById(projectId).orElse(null);
-        Role role = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project).getRole();
+        Role role = userProjectRoleReposirory.getUserProjectRoleByUserAndProjectId(user, projectId).getRole();
         if (role != Role.ROLE_LEADER) return "redirect:/error/access-denied-error";
         try{
             projectService.deleteProject(projectId);

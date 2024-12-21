@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 @EqualsAndHashCode
 @Entity
 @NoArgsConstructor
-public class Project {
+public class Project{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

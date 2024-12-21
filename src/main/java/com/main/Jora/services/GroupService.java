@@ -26,9 +26,12 @@ public class GroupService {
     ProjectRepository projectRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private ProjectService projectService;
+
     @CachePut(value = "user", key = "#user.getId()")
-    public User changeUserRole(User user, Project project, String action) {
-        Role currentRole = userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project.getId());
+    public User changeUserRole(User user, Long projectId, String action) {
+        Role currentRole = userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), projectId);
         Role newRole = currentRole;
         if ("PROMOTE".equals(action)) {
             if (currentRole == Role.ROLE_PARTICIPANT) {
@@ -44,19 +47,19 @@ public class GroupService {
             }
         }
         if (newRole != currentRole) {
-            changeRole(user, newRole, project);
+            changeRole(user, newRole, projectId);
         }
         return user;
     }
-    private void changeRole(User user, Role role, Project project) {
-        UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
+    private void changeRole(User user, Role role, Long projectId) {
+        UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProjectId(user, projectId);
         userProjectRole.setRole(role);
         log.info("Changing role {} for user {}", role, user);
         userProjectRoleReposirory.save(userProjectRole);
     }
     @CachePut(value = "user", key = "#user.getId()")
     public User banUser(User user, Project project){
-        UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProject(user, project);
+        UserProjectRole userProjectRole = userProjectRoleReposirory.getUserProjectRoleByUserAndProjectId(user, project.getId());
         userProjectRole.setBanned(!userProjectRole.isBanned());
         log.info("Changing ban status for user {}", userProjectRole.getUser());
         userProjectRoleReposirory.save(userProjectRole);
@@ -84,7 +87,7 @@ public class GroupService {
         User user = userRepository.findByEmail(email);
 
         Tag tag = tagRepository.findTagByTagNameAndProjectId(tagName,
-                projectRepository.findIdByHash(project_hash));
+                projectService.findIdByHash(project_hash));
 
         if (user.getTags().contains(tag)){
             log.info("removing tag {} from user {}", tag, user);

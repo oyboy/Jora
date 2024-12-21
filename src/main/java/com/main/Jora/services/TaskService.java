@@ -40,10 +40,12 @@ public class TaskService {
     private CommentRepository commentRepository;
     @Autowired
     private UserCommentRepository userCommentRepository;
+    @Autowired
+    @Lazy
+    private ProjectService projectService;
 
     public void addTask(Task task, String project_hash, User user){
-        Long project_id = projectRepository.findIdByHash(project_hash);
-        Project projectFromDb = projectRepository.findById(project_id).orElse(null);
+        Project projectFromDb = projectService.findProjectByHash(project_hash);
 
         projectFromDb.getTaskList().add(task);
         log.info("Setting task {} to project {}", task, projectFromDb);
@@ -120,7 +122,7 @@ public class TaskService {
     public void setTagToTask(Long task_id, String project_hash, String tagName) throws
             CustomException.ObjectExistsException {
         Task task = taskRepository.findById(task_id).orElse(null);
-        Long projectId = projectRepository.findIdByHash(project_hash);
+        Long projectId = projectService.findIdByHash(project_hash);
 
         if (!taskRepository.existsByProjectIdAndId(projectId, task.getId()))
             throw new CustomException.ObjectExistsException("");

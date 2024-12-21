@@ -8,6 +8,7 @@ import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserTaskRepository;
+import com.main.Jora.services.ProjectService;
 import com.main.Jora.services.TaskService;
 import com.main.Jora.services.UserService;
 import jakarta.validation.Valid;
@@ -29,6 +30,8 @@ import java.util.List;
 @RequestMapping("/projects/{project_hash}/tasks")
 public class TaskController {
     @Autowired
+    ProjectService projectService;
+    @Autowired
     ProjectRepository projectRepository;
     @Autowired
     TaskService taskService;
@@ -42,7 +45,7 @@ public class TaskController {
     UserProjectRoleReposirory userProjectRoleReposirory;
     @ModelAttribute("project")
     public Project getProject(@PathVariable String project_hash) {
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         if (project_id == null) {
             return null;
         }
@@ -51,7 +54,7 @@ public class TaskController {
     @ModelAttribute("tasks")
     public Iterable<Task> getTasksModel(@PathVariable String project_hash,
                                         @RequestParam(required = false) String deadlineFilter) {
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         if (project_id == null) {
             return new ArrayList<>();
         }
@@ -59,13 +62,13 @@ public class TaskController {
     }
     @ModelAttribute("usersAndTasks")
     public List<UserTask> getUsersAndTasks(@PathVariable("project_hash") String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         return userTaskRepository.findAllByProjectId(project_id);
     }
     @ModelAttribute("currentRole")
     public Role getRole(@AuthenticationPrincipal User user,
                         @PathVariable("project_hash") String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         return userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), project_id);
     }
     @ModelAttribute(name = "user")
@@ -78,12 +81,12 @@ public class TaskController {
     }
     @ModelAttribute(name = "tagsForProject")
     public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         return tagRepository.findTagsByProjectId(project_id);
     }
     @ModelAttribute(name = "tasksAndTags")
     public List<TaskTagsDTO> getTasksWithTags(@PathVariable("project_hash") String project_hash) {
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         Iterable<Task> tasks = taskService.findAllTasks(project_id);
 
         List<TaskTagsDTO> tasksWithTags = new ArrayList<>();
@@ -95,7 +98,7 @@ public class TaskController {
     }
     @GetMapping
     public String getTasks(@PathVariable String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         if (project_id == null) return "redirect:/home";
         return "tasks";
     }

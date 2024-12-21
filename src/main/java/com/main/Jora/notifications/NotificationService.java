@@ -5,9 +5,13 @@ import com.main.Jora.models.Project;
 import com.main.Jora.models.User;
 import com.main.Jora.repositories.ProjectRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
+import com.main.Jora.services.ProjectService;
 import com.main.Jora.services.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -26,19 +30,22 @@ public class NotificationService {
     @Autowired
     private ProjectNotificationRepository projectNotificationRepository;
     @Autowired
-    ProjectRepository projectRepository;
-    @Autowired
     UserProjectRoleReposirory userProjectRoleReposirory;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     @Lazy
     private TaskService taskService;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    CacheUpdater cacheUpdater;
 
     public void sendNotificationToAll(String project_hash, String title, String message){
-        Long project_id = projectRepository.findIdByHash(project_hash);
-        Project project = projectRepository.findById(project_id).orElse(null);
-        List<User> users = userProjectRoleReposirory.findUsersByProjectId(project_id);
+/*        Long project_id = projectRepository.findIdByHash(project_hash);
+        Project project = projectRepository.findById(project_id).orElse(null);*/
+        Project project = projectService.findProjectByHash(project_hash);
+        List<User> users = userProjectRoleReposirory.findUsersByProjectId(project.getId());
 
         Notification notification = new Notification();
         notification.setTitle(title);
@@ -80,9 +87,10 @@ public class NotificationService {
         notificationRepository.save(notification);
         userNotificationRepository.save(userNotification);
         log.info("trying to send notif to {}", user);
+        cacheUpdater.refreshUnreadNotificationsForUser(user.getId());
         messagingTemplate.convertAndSendToUser(user.getId().toString(), "/topic/notifications", notification);
     }
-
+    @Cacheable(value = "notifications", key = "#user_id")
     public List<Notification> getUnreadNotificationsForUser(Long user_id) {
         return userNotificationRepository.findByUserIdAndReadIsFalse(user_id);
     }
@@ -117,4 +125,3 @@ public class NotificationService {
         return notificationRepository.findById(id).orElse(null);
     }
 }
-

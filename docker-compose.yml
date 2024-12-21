@@ -13,6 +13,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
       API_REDIS_HOST: jora-redis-db
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: 172.17.0.1:9092
     depends_on:
       - mysql
       - mongo
@@ -26,14 +27,14 @@ services:
       MYSQL_DATABASE: joradb
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/home/mysql
 
   mongo:
     image: mongo:latest
     container_name: jora-mongo-db
     restart: always
     volumes:
-      - mongo_data:/data/db
+      - mongo_data:/home/data/db
 
   redis:
     image: redis:alpine
@@ -41,6 +42,10 @@ services:
     restart: always
     volumes:
       - ./redisdata:/data
+
+  #zookeeper: { image: confluentinc/cp-zookeeper:latest, environment: { ZOOKEEPER_CLIENT_PORT: 2181, ZOOKEEPER_TICK_TIME: 2000 }, ports: [ 2181:2181 ] }
+
+  #kafka: { image: confluentinc/cp-kafka:latest, depends_on: [ zookeeper ], ports: [ 9094:9094 ], environment: { KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181, KAFKA_LISTENERS: "INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094", KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:9092,OUTSIDE://localhost:9094", KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT", KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL } }
 
 volumes:
   mongo_data:

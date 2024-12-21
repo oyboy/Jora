@@ -1,10 +1,10 @@
 <configuration>
-    <property name="kafka.bootstrap.servers" value="${spring.kafka.bootstrap-servers}"/>
-
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+        <logger name="org.springframework.cache" level="DEBUG"/>
+        <logger name="org.springframework.cache.interceptor" level="DEBUG"/>
     </appender>
 
     <appender name="INFO_WARN_FILE" class="ch.qos.logback.core.FileAppender">
@@ -38,6 +38,7 @@
     </appender>
 
     <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <property name="kafka.bootstrap.servers" value="${spring.kafka.bootstrap-servers}"/>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <fieldNames>
                 <timestamp>timestamp</timestamp>

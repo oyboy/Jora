@@ -12,6 +12,7 @@ import com.main.Jora.repositories.TagRepository;
 import com.main.Jora.repositories.UserProjectRoleReposirory;
 import com.main.Jora.repositories.UserRepository;
 import com.main.Jora.services.GroupService;
+import com.main.Jora.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -27,8 +28,6 @@ import java.util.List;
 @RequestMapping("/projects/{project_hash}/group")
 public class GroupController {
     @Autowired
-    ProjectRepository projectRepository;
-    @Autowired
     UserProjectRoleReposirory userProjectRoleReposirory;
     @Autowired
     UserRepository userRepository;
@@ -36,15 +35,18 @@ public class GroupController {
     GroupService groupService;
     @Autowired
     TagRepository tagRepository;
+    @Autowired
+    private ProjectService projectService;
+
     //Вывод данных о пользователях и их тегах
     @ModelAttribute(name = "tagsForProject")
     public List<Tag> getTagsForThisProject(@PathVariable("project_hash") String project_hash){
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         return tagRepository.findTagsByProjectId(project_id);
     }
     @ModelAttribute(name = "usersAndTags")
     public List<UserTagsDTO> getUsersWithTags(@PathVariable("project_hash") String project_hash) {
-        Long project_id = projectRepository.findIdByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         List<UserProjectRole> usersAndRoles = userProjectRoleReposirory.findUsersAndRolesByProjectId(project_id);
 
         List<UserTagsDTO> usersWithTags = new ArrayList<>();
@@ -58,9 +60,9 @@ public class GroupController {
     @ModelAttribute("currentUserRole")
     public UserProjectRole getCurrentUserRole(@AuthenticationPrincipal User currentUser,
                                               @PathVariable("project_hash") String project_hash){
-        Project project = projectRepository.findProjectByHash(project_hash);
+        Long project_id = projectService.findIdByHash(project_hash);
         return userProjectRoleReposirory
-                .getUserProjectRoleByUserAndProject(currentUser, project);
+                .getUserProjectRoleByUserAndProjectId(currentUser, project_id);
     }
     @ModelAttribute(name = "user")
     public User getUser(){
@@ -106,7 +108,7 @@ public class GroupController {
                           Model model,
                           @AuthenticationPrincipal User currentUser){
         User user = userRepository.findByEmail(email);
-        Project project = projectRepository.findProjectByHash(project_hash);
+        Project project = projectService.findProjectByHash(project_hash);
         if (user == null){
             model.addAttribute("emailNotFound", "Нет пользователя с таким email");
             return "group";
@@ -124,8 +126,8 @@ public class GroupController {
                                  @RequestParam("email") String email,
                                  @RequestParam("action") String action) {
         User user = userRepository.findByEmail(email);
-        Project project = projectRepository.findProjectByHash(project_hash);
-        groupService.changeUserRole(user, project, action);
+        Long projectId = projectService.findIdByHash(project_hash);
+        groupService.changeUserRole(user, projectId, action);
         return "redirect:/projects/" + project_hash + "/group";
     }
 }

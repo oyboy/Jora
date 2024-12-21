@@ -43,7 +43,7 @@
     </div>
 
 
-    <form action="/projects/${project_hash}/tasks/edit" method="post">
+    <form action="/projects/${project_hash}/tasks/edit/${task.id}" method="post">
         <div class="mb-3">
             <label for="name" class="form-label fw-bold">Название:</label>
             <input type="text" id="name" name="name" class="form-control" value="${task.name}" required>

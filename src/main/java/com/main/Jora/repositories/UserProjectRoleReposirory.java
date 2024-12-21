@@ -32,8 +32,10 @@ public interface UserProjectRoleReposirory extends CrudRepository<UserProjectRol
            "FROM UserProjectRole upr " +
            "WHERE upr.user.id = :userId AND upr.project.id = :projectId")
    boolean isUserBanned(@Param("userId") Long userId, @Param("projectId") Long projectId);
-
-   UserProjectRole getUserProjectRoleByUserAndProject(User user, Project project);
+   @Query("SELECT upr " +
+           "FROM UserProjectRole upr " +
+           "WHERE upr.user = :user AND upr.project.id = :projectId")
+   UserProjectRole getUserProjectRoleByUserAndProjectId(@Param("user") User user, @Param("projectId") Long projectId);
 
    @Query("SELECT upr.role " +
            "FROM UserProjectRole upr " +
