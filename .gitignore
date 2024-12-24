@@ -4,6 +4,7 @@ target/
 logs/
 redisdata/
 .env
+tmp/
 appmap.yml
 src/main/resources/application-dev.yml
 !**/src/main/**/target/
