@@ -64,15 +64,18 @@
 
     <script>
         function copyLink(hash, element) {
-            navigator.clipboard.writeText(hash).then(() => {
-                $(element).popover('show');
-                console.log("copied");
-                setTimeout(() => {
-                    $(element).popover('hide');
-                }, 1500);
-            }).catch(err => {
-                console.error('Ошибка при копировании: ', err);
-            });
+            // Для поддержки старых браузеров
+            const textarea = document.createElement('textarea');
+            textarea.value = hash;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            $(element).popover('show');
+            setTimeout(() => {
+                $(element).popover('hide');
+            }, 1500);
         }
     </script>
 </@c.page>
