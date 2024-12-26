@@ -124,10 +124,16 @@ public class GroupController {
     @PostMapping("/change-role")
     public String changeUserRole(@PathVariable("project_hash") String project_hash,
                                  @RequestParam("email") String email,
-                                 @RequestParam("action") String action) {
+                                 @RequestParam("action") String action,
+                                 Model model) {
         User user = userRepository.findByEmail(email);
         Long projectId = projectService.findIdByHash(project_hash);
-        groupService.changeUserRole(user, projectId, action);
+        try{
+            groupService.changeUserRole(user, projectId, action);
+        } catch (CustomException.UserNotFoundException ux){
+            model.addAttribute("leaderChangeRoleException", "В проекте должен быть как минимум один лидер");
+            return "group";
+        }
         return "redirect:/projects/" + project_hash + "/group";
     }
 }

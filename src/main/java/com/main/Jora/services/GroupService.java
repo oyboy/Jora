@@ -30,7 +30,8 @@ public class GroupService {
     private ProjectService projectService;
 
     @CachePut(value = "user", key = "#user.getId()")
-    public User changeUserRole(User user, Long projectId, String action) {
+    public User changeUserRole(User user, Long projectId, String action)
+    throws CustomException.UserNotFoundException{
         Role currentRole = userProjectRoleReposirory.findRoleByUserAndProject(user.getId(), projectId);
         Role newRole = currentRole;
         if ("PROMOTE".equals(action)) {
@@ -41,7 +42,9 @@ public class GroupService {
             }
         } else if ("DEMOTE".equals(action)) {
             if (currentRole == Role.ROLE_LEADER) {
-                newRole = Role.ROLE_MODERATOR;
+                if (userProjectRoleReposirory.existsMoreThanOneLeader(projectId))
+                    newRole = Role.ROLE_MODERATOR;
+                else throw new CustomException.UserNotFoundException("Din't found other leaders");
             } else if (currentRole == Role.ROLE_MODERATOR) {
                 newRole = Role.ROLE_PARTICIPANT;
             }

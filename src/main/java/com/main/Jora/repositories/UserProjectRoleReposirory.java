@@ -54,4 +54,9 @@ public interface UserProjectRoleReposirory extends CrudRepository<UserProjectRol
            "ON u.id = upr.user.id " +
            "WHERE upr.project.id = :projectId")
    List<User> findUsersByProjectId(@Param("projectId") Long projectId);
+
+   @Query("SELECT COUNT(*) > 1 " +
+           "FROM UserProjectRole upr " +
+           "WHERE upr.project.id = :projectId AND upr.role='ROLE_LEADER'")
+   boolean existsMoreThanOneLeader(@Param("projectId") Long projectId);
 }

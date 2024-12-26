@@ -64,6 +64,9 @@
     </form>
 
     <h4>Пользователи:</h4>
+    <#if leaderChangeRoleException??>
+        <div class="alert alert-danger">${leaderChangeRoleException}</div>
+    </#if>
     <#list usersAndTags as userAndTag>
     <div class="card mb-3">
         <div class="card-body">
