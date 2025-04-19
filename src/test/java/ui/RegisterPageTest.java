@@ -1,7 +1,10 @@
 package ui;
 
+import com.main.Jora.AbstractTestContainers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import ui.pages.RegisterPage;
 
 import static com.codeborne.selenide.Condition.text;
@@ -9,9 +12,11 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverConditions.url;
 
+@ActiveProfiles("test-ui")
 public class RegisterPageTest {
     private static final String URL = "http://localhost:8081/registration";
     private RegisterPage registerPage = new RegisterPage();
+
     @Test
     public void testRegisterPageWithCorrectData() {
         open(URL);
@@ -54,6 +59,6 @@ public class RegisterPageTest {
                 "test"
         );
         String validationMessage = registerPage.getEmailErrorMessage();
-        Assertions.assertTrue(!validationMessage.isEmpty());
+        Assertions.assertFalse(validationMessage.isEmpty());
     }
 }

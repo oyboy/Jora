@@ -60,13 +60,15 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO_WARN_FILE" />
         <appender-ref ref="ERROR_FILE" />
-        <appender-ref ref="kafkaAppender" />
+        <!--<appender-ref ref="kafkaAppender" />-->
     </logger>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="INFO_WARN_FILE" />
         <appender-ref ref="ERROR_FILE" />
+<!--
         <appender-ref ref="kafkaAppender" />
+-->
     </root>
 </configuration>
