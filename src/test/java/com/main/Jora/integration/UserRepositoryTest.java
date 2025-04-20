@@ -1,6 +1,5 @@
 package com.main.Jora.integration;
 
-import com.main.Jora.JoraApplication;
 import com.main.Jora.models.User;
 import com.main.Jora.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -8,13 +7,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = JoraApplication.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest extends AbstractTestContainers {
     @Autowired
     private UserRepository userRepository;
@@ -37,5 +38,11 @@ public class UserRepositoryTest extends AbstractTestContainers {
 
         assertThat(found).isNotNull();
         Assertions.assertEquals(user, found);
+    }
+    @Test
+    @DisplayName("Поиск несуществующего пользователя по email")
+    void FindByEmail() {
+        User found = userRepository.findByEmail("email@email.com");
+        assertThat(found).isNull();
     }
 }
