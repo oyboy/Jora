@@ -1,6 +1,5 @@
-package com.main.Jora;
+package com.main.Jora.integration;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
