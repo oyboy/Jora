@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/projects/{project_hash}/tasks/{task_id}/api/comments")
+@RequestMapping("/api/v1/projects/{project_hash}/tasks/{task_id}/comments")
 public class CommentController {
     @Autowired
     private CommentService commentService;

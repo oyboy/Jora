@@ -31,7 +31,7 @@ $(document).ready(function() {
                 <p>
                     ${comment.text.replace(/\n/g, '<br>')}
                 </p>`)
-                .append(`<img src="/home/user/${comment.userDTO.userId}/avatar" class="avatar"
+                .append(`<img src="/api/v1/home/user/${comment.userDTO.userId}/avatar" class="avatar"
                                  style="width: 50px; height: 50px;" />`);
         }else{
             commentElement.append(`
@@ -93,7 +93,7 @@ $(document).ready(function() {
     //Загрузка комментариев
     function loadComments() {
         $.ajax({
-            url: `/projects/${projectHash}/api/discussion/comments`,
+            url: `/api/v1/projects/${projectHash}/discussion/comments`,
             method: 'GET',
             success: function(comments) {
                 $('.commentsList').empty(); // Очищаем предыдущие комментарии
@@ -136,7 +136,7 @@ $(document).ready(function() {
             formData.append("projectHash", projectHash);
 
             $.ajax({
-                url: `/projects/${projectHash}/api/discussion/upload-files`,
+                url: `/api/v1/projects/${projectHash}/discussion/upload-files`,
                 method: 'POST',
                 data: formData,
                 headers: {

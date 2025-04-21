@@ -60,7 +60,7 @@ $(document).ready(function() {
     function loadComments(taskId) {
         $.ajax({
             type: "GET",
-            url: `/projects/${projectHash}/tasks/${taskId}/api/comments`,
+            url: `/api/v1/projects/${projectHash}/tasks/${taskId}/comments`,
             success: function(comments) {
                 const commentsList = $(`.commentsSection[data-task-id="${taskId}"] .commentsList`);
                 commentsList.empty(); // Очищаем текущий список комментариев
@@ -94,7 +94,7 @@ $(document).ready(function() {
         // Функция показа пользователей, прочитавших комментарий
         function getReaders(commentId, taskId) {
             $.ajax({
-                url: `/projects/${projectHash}/tasks/${taskId}/api/comments/${commentId}/readers`,
+                url: `/api/v1/projects/${projectHash}/tasks/${taskId}/comments/${commentId}/readers`,
                 method: 'GET',
                 success: function(readByUsers) {
                     showReaders(readByUsers);
@@ -161,7 +161,7 @@ $(document).ready(function() {
         };
         console.log("Формируемый json: " + JSON.stringify(requestBody));
 
-        fetch(`/projects/${projectHash}/tasks/${taskId}/api/comments/read`, {
+        fetch(`/api/v1/projects/${projectHash}/tasks/${taskId}/comments/read`, {
             method: 'POST',
             headers: {
                 'X-CSRF-Token': csrfToken,
@@ -186,7 +186,7 @@ $(document).ready(function() {
     function checkForUnreadComments(taskId) {
         return $.ajax({
             type: "GET",
-            url: `/projects/${projectHash}/tasks/${taskId}/api/comments/unreadCount`,
+            url: `/api/v1/projects/${projectHash}/tasks/${taskId}/comments/unreadCount`,
         }).then(unreadCount => {
             console.log("Found " + unreadCount + " unread comments in task " + taskId);
             const button = $(`.showCommentsButton[data-task-id="${taskId}"]`);

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/projects/{project_hash}/api/discussion")
+@RequestMapping("/api/v1/projects/{project_hash}/discussion")
 public class DiscussionRestController {
     @Autowired
     DiscussionService discussionService;

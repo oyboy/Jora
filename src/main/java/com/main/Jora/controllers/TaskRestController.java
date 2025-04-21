@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/projects/{project_hash}/api/tasks")
+@RequestMapping("/api/v1/projects/{project_hash}/tasks")
 public class TaskRestController {
     @Autowired
     TaskService taskService;

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/home/user/{userId}")
+@RequestMapping("/api/v1/home/user/{userId}")
 public class UserRestController {
     @Autowired
     UserService userService;

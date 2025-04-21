@@ -8,7 +8,7 @@ $(document).ready(function() {
         if (isDropdownOpen) {
             return;
         }
-        $.get(`/api/notifications/unread/${userId}`, function(data) {
+        $.get(`/api/v1/notifications/unread/${userId}`, function(data) {
             if (data.length > 0) {
                 $('#notification-count').text(data.length).show();
                 $('#notification-list').empty(); // Очистить перед добавлением новых уведомлений
@@ -46,7 +46,7 @@ $(document).ready(function() {
         const notificationId = $(this).data('id');
         console.log("Отправляю запрос на пометку уведомления ID:", notificationId);
         $.ajax({
-            url: `/api/notifications/read/${notificationId}`,
+            url: `/api/v1/notifications/read/${notificationId}`,
             type: 'POST',
             headers: {
                 'X-CSRF-Token': csrfToken // Добавление CSRF-токена в заголовок

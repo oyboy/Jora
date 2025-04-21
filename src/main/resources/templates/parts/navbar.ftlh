@@ -21,7 +21,7 @@
                     </div>
 
                     <div class="d-flex align-items-center">
-                        <img src="/home/user/${user.id}/avatar" class="avatar me-2" style="width: 50px; height:50px" alt="Avatar"/>
+                        <img src="/api/v1/home/user/${user.id}/avatar" class="avatar me-2" style="width: 50px; height:50px" alt="Avatar"/>
                         <div class="text-center">
                             <h6 class="mb-0"><a href="/home/user/${user.id}"><i>${user.username}</i></a></h6>
                             <small class="text-muted"><i>${user.email}</i></small>

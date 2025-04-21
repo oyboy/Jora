@@ -8,7 +8,7 @@ $(document).ready(function() {
     });
     function loadProjects() {
         $.ajax({
-            url: '/home/api/calendar/projects',
+            url: '/api/v1/home/calendar/projects',
             method: 'GET',
             success: function(projects) {
                 const projectFilter = $('#projectFilter');
@@ -35,7 +35,7 @@ $(document).ready(function() {
         const selectedProject = $('#projectFilter').val();
         const selectedTaskType = $('#taskFilter').val();
 
-        let url = '/home/api/calendar/tasks';
+        let url = '/api/v1/home/calendar/tasks';
 
         url += selectedTaskType === 'my' ? '/my' : '/all';
         if (selectedProject) {
@@ -73,7 +73,7 @@ $(document).ready(function() {
                         // Добавляем отображение аватаров пользователе
                         console.log("Clicked this shit");
                         $.ajax({
-                            url: `/home/api/calendar/tasks/${event.id}/users`,
+                            url: `/api/v1/home/calendar/tasks/${event.id}/users`,
                             method: 'GET',
                             success: function(users) {
                                 const usersContainer = $('#taskUsers');
@@ -86,7 +86,7 @@ $(document).ready(function() {
 
                                     const userElement = $('<div class="user-item"></div>');
                                     userElement.html(`
-                            <img src="/home/user/${userId}/avatar" class="avatar" style="width: 50px; height: 50px; margin-bottom: 10px" alt="${username}'s avatar" />
+                            <img src="/api/v1/home/user/${userId}/avatar" class="avatar" style="width: 50px; height: 50px; margin-bottom: 10px" alt="${username}'s avatar" />
                             <span>${username}</span>
                         `);
                                     usersContainer.append(userElement); // Добавляем пользователя в контейнер
@@ -112,7 +112,7 @@ $(document).ready(function() {
                             };
                             //console.log("data: " + JSON.stringify(dataToSend));
                             $.ajax({
-                                url: "/home/api/calendar/tasks/update",
+                                url: "/api/v1/home/calendar/tasks/update",
                                 type: "POST",
                                 headers: {
                                     'X-CSRF-Token': csrfToken

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/home/api/calendar")
+@RequestMapping("/api/v1/home/calendar")
 public class CalendarRestController {
     @Autowired
     TaskService taskService;

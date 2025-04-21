@@ -31,7 +31,7 @@ $(document).ready(function() {
         };
         console.log("Формируемый json: " + JSON.stringify(data));
         $.ajax( {
-            url: `/projects/${projectHash}/api/tasks/update`,
+            url: `/api/v1/projects/${projectHash}/tasks/update`,
             method: 'POST',
             headers: {
                 'X-CSRF-Token': csrfToken
