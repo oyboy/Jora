@@ -1,5 +1,6 @@
 HELP.md
 target/
+allure-results/
 !.mvn/wrapper/maven-wrapper.jar
 logs/
 redisdata/
