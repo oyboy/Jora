@@ -1,5 +1,6 @@
 HELP.md
 target/
+.allure
 allure-results/
 !.mvn/wrapper/maven-wrapper.jar
 logs/
