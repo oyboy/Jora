@@ -1,4 +1,4 @@
-package com.main.Jora.api.rest;
+package com.main.Jora.api;
 
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;

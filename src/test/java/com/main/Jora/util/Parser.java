@@ -1,6 +1,6 @@
 package com.main.Jora.util;
 
-import com.main.Jora.api.rest.RestAuthSession;
+import com.main.Jora.api.RestAuthSession;
 import io.restassured.http.ContentType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
