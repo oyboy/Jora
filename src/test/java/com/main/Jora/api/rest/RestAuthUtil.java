@@ -1,12 +1,12 @@
-package com.main.Jora.api;
+package com.main.Jora.api.rest;
 
 import io.restassured.RestAssured;
 import io.restassured.filter.session.SessionFilter;
 import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
 
-public class TestAuthUtil {
-    public static TestAuthSession loginAndGetSession(String username, String password) {
+public class RestAuthUtil {
+    public static RestAuthSession loginAndGetSession(String username, String password) {
         RestAssured.baseURI = "http://localhost:8081";
 
         Response loginPage = given()
@@ -19,7 +19,6 @@ public class TestAuthUtil {
 
         String csrfToken = loginPage.htmlPath().getString("**.find { it.@name == '_csrf' }.@value");
         String jsessionId = loginPage.getCookie("JSESSIONID");
-        System.out.println("Login page: CSRF=" + csrfToken + " JSESSIONID=" + jsessionId);
 
         SessionFilter sessionFilter = new SessionFilter();
 
@@ -37,7 +36,6 @@ public class TestAuthUtil {
                 .extract().response();
 
         String newJsessionId = loginResponse.getCookie("JSESSIONID");
-        System.out.println("After login: JSESSIONID=" + newJsessionId);
 
         Response csrfPage = given()
                 .filter(sessionFilter)
@@ -48,9 +46,7 @@ public class TestAuthUtil {
                 .statusCode(200)
                 .extract().response();
         String newCsrfToken = csrfPage.htmlPath().getString("**.find { it.@name == '_csrf' }.@value");
-        System.out.println("CSRF after login: " + newCsrfToken);
 
-        return new TestAuthSession(sessionFilter, newCsrfToken, newJsessionId);
+        return new RestAuthSession(sessionFilter, newCsrfToken, newJsessionId);
     }
-
 }
